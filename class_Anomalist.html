@@ -1,0 +1,43 @@
+window.OEShared = {
+    classTemplates: {
+        "Soldier": { name: "Soldier", subclasses: ["Sharpshooter", "Tactician", "Sentinel", "Raider"], casters: {} },
+        "Ranger": { name: "Ranger", subclasses: ["Ghost", "Nomad", "Marksman", "Pathfinder"], casters: { "Pathfinder": "Psiphon" } },
+        "Engineer": { name: "Engineer", subclasses: ["Scavenger", "Tinker", "Bio Technician", "Combat Engineer"], casters: { "Scavenger": "Psiphon" } },
+        "Healer": { name: "Healer", subclasses: ["Surgeon", "Alchemist", "Shaman"], casters: { "Alchemist": "Psiphon", "Shaman": "Conduit" } },
+        "Freelancer": { name: "Freelancer", subclasses: ["Smuggler", "Informant", "Emissary", "Trader"], casters: {} },
+        "Archivist": { name: "Archivist", subclasses: ["Reliquist", "Lorekeeper", "Drifter", "Infiltrator"], casters: {} },
+        "Anomalist": { name: "Anomalist", subclasses: ["Architect", "Psion", "Catalyst", "Voidborn"], casters: { "Architect": "Psiphon", "Psion": "Conduit", "Catalyst": "Conduit", "Voidborn": "Vessel" } },
+        "Mystic": { name: "Mystic", subclasses: ["Harbinger", "Warden", "Shaman", "Wayfinder"], casters: { "Harbinger": "Vessel", "Warden": "Conduit", "Shaman": "Conduit", "Wayfinder": "Conduit" } }
+    },
+    magicData: {
+        "Conduit": { type: "Conduit", description: "Conduit Casters channel ambient energy through their connection.", mechanics: [] },
+        "Vessel": { type: "Vessel", description: "Vessel Casters internalize entities or raw force into their physical form.", mechanics: [] },
+        "Psiphon": { type: "Psiphon", description: "Psiphon Casters draw and manipulate power from surrounding matter and minds.", mechanics: [] }
+    },
+    updateSubclassOptions: (classVal, targetSelect, selectedSub = null) => {
+        targetSelect.innerHTML = '';
+        if (window.OEShared.classTemplates[classVal]) {
+            window.OEShared.classTemplates[classVal].subclasses.forEach(sub => {
+                const opt = document.createElement('option');
+                opt.value = sub;
+                opt.textContent = sub;
+                opt.className = 'bg-bg';
+                targetSelect.appendChild(opt);
+            });
+            if (selectedSub && window.OEShared.classTemplates[classVal].subclasses.includes(selectedSub)) {
+                targetSelect.value = selectedSub;
+            }
+        }
+    },
+    autoSaveDossier: (characterData) => {
+        if (!characterData.name) return;
+        localStorage.setItem('active_character', JSON.stringify(characterData));
+        try {
+            let log = JSON.parse(localStorage.getItem('dossier_log') || '[]');
+            log = log.filter(d => d.name !== characterData.name);
+            log.unshift(characterData);
+            if (log.length > 5) log.pop(); // Keep top 5 latest
+            localStorage.setItem('dossier_log', JSON.stringify(log));
+        } catch (e) {}
+    }
+};
