@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TERMINAL // O&E Live Metrics</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="theme-selector-container" style="position: absolute; top: 1rem; right: 1rem; z-index: 10000;">
+    <select id="sel-theme" class="terminal-input mini bg-transparent c-text-primary">
+        <option value="default" class="bg-bg">Cyan CRT</option>
+        <option value="amber" class="bg-bg">Amber CRT</option>
+        <option value="matrix" class="bg-bg">Green CRT</option>
+        <option value="notebook" class="bg-bg">WW2 Notebook</option>
+    </select>
+</div>
+
+<div id="pdf-export-screen" class="overlay-screen hidden">
+    <h1>> PRINT DOSSIER <span class="cursor-blink">_</span></h1>
+    <p class="header-sub mb-2">Select Document Format</p>
+    <div class="flex-col gap-1 w-100 max-w-400">
+        <button id="btn-pdf-full" class="terminal-btn">Fully Filled</button>
+        <button id="btn-pdf-partial" class="terminal-btn">Partially Filled</button>
+        <button id="btn-pdf-blank" class="terminal-btn">Hand Fillable (Blank)</button>
+        <button id="btn-pdf-cancel" class="terminal-btn btn-red">Cancel</button>
+    </div>
+</div>
+
+<div id="main-sheet" class="container">
+    <header>
+        <h1>> Live Metrics <span class="cursor-blink">_</span></h1>
+        <div class="header-sub">// Outlands and Echos</div>
+        <div class="header-rule"></div>
+        
+        <div class="char-meta-grid">
+            <div class="meta-item">NAME: <span id="char-name" data-key="name" contenteditable="true"></span></div>
+            <div class="meta-item">PLAYER: <span id="char-player" data-key="player" contenteditable="true"></span></div>
+            <div class="meta-item">CLASS: <select id="char-class" data-key="class" class="terminal-input mini inline-select"></select></div>
+            <div class="meta-item">SUBCLASS: <select id="char-subclass" data-key="subclass" class="terminal-input mini inline-select"></select></div>
+            <div class="meta-item stat-control">LEVEL: <span><span id="char-level" class="c-text-primary">1</span><span class="spinner-arrows"><span class="arrow up" data-key="level" data-action="up">▲</span><span class="arrow down" data-key="level" data-action="down">▼</span></span></span></div>
+            <div class="meta-item stat-control">GIFT XP: <span><span id="char-gift-xp" class="c-text-primary">0</span><span class="spinner-arrows"><span class="arrow up" data-key="gift_xp" data-action="up">▲</span><span class="arrow down" data-key="gift_xp" data-action="down">▼</span></span></span></div>
+            <div class="meta-item stat-control">GIFT AP: <span><span id="char-gift-ap" class="c-text-primary">0</span><span class="spinner-arrows"><span class="arrow up" data-key="gift_ap" data-action="up">▲</span><span class="arrow down" data-key="gift_ap" data-action="down">▼</span></span></span></div>
+            <div class="meta-item">XP (REM/TOT): <span id="char-xp-rem" class="c-amber">0</span> / <span id="char-xp-tot">0</span></div>
+            <div class="meta-item">AP (REM/TOT): <span id="char-ap-rem" class="c-amber">0</span> / <span id="char-ap-tot">0</span></div>
+            <div class="meta-item d-none" id="pp-container">PRESTIGE: <span id="char-pp" class="c-amber">0 PP</span></div>
+        </div>
+    </header>
+
+    <div class="grid-3-col">
+        <div class="panel">
+            <div class="panel-legend"><span class="legend-text">Mental</span></div>
+            <div class="readout-line"><span class="line-key">INT (INTELLIGENCE)</span><span class="cost-tag" id="track-int"></span><span class="line-dots">......</span><span class="line-value stat-control"><span id="attr-int" data-key="int"></span><span class="spinner-arrows"><span class="arrow up" data-key="int" data-action="up">▲</span><span class="arrow down" data-key="int" data-action="down">▼</span></span></span></div>
+            <div class="readout-line"><span class="line-key">CON (CONSTITUTION)</span><span class="cost-tag" id="track-con"></span><span class="line-dots">......</span><span class="line-value stat-control"><span id="attr-con" data-key="con"></span><span class="spinner-arrows"><span class="arrow up" data-key="con" data-action="up">▲</span><span class="arrow down" data-key="con" data-action="down">▼</span></span></span></div>
+            <div class="readout-line"><span class="line-key">WILL (WILLPOWER)</span><span class="cost-tag" id="track-will"></span><span class="line-dots">........</span><span class="line-value stat-control"><span id="attr-will" data-key="will"></span><span class="spinner-arrows"><span class="arrow up" data-key="will" data-action="up">▲</span><span class="arrow down" data-key="will" data-action="down">▼</span></span></span></div>
+            <div class="readout-line"><span class="line-key">PER (PERCEPTION)</span><span class="cost-tag" id="track-per"></span><span class="line-dots">........</span><span class="line-value stat-control"><span id="attr-per" data-key="per"></span><span class="spinner-arrows"><span class="arrow up" data-key="per" data-action="up">▲</span><span class="arrow down" data-key="per" data-action="down">▼</span></span></span></div>
+            <div class="readout-line mt-0-75 font-size-1"><span class="line-key c-text-dim">LEVEL ALL MENTAL (35 XP)</span><span class="line-dots">......</span><span class="line-value stat-control"><span class="spinner-arrows"><span class="arrow up" data-action="up-mental-all">▲</span><span class="arrow down" data-action="down-mental-all">▼</span></span></span></div>
+        </div>
+        <div class="panel">
+            <div class="panel-legend"><span class="legend-text">Physical</span></div>
+            <div class="readout-line"><span class="line-key">STR (STRENGTH)</span><span class="cost-tag" id="track-str"></span><span class="line-dots">..........</span><span class="line-value stat-control"><span id="attr-str" data-key="str"></span><span class="spinner-arrows"><span class="arrow up" data-key="str" data-action="up">▲</span><span class="arrow down" data-key="str" data-action="down">▼</span></span></span></div>
+            <div class="readout-line"><span class="line-key">DEX (DEXTERITY)</span><span class="cost-tag" id="track-dex"></span><span class="line-dots">.........</span><span class="line-value stat-control"><span id="attr-dex" data-key="dex"></span><span class="spinner-arrows"><span class="arrow up" data-key="dex" data-action="up">▲</span><span class="arrow down" data-key="dex" data-action="down">▼</span></span></span></div>
+            <div class="readout-line"><span class="line-key">HTH (HEALTH)</span><span class="cost-tag" id="track-hth"></span><span class="line-dots">............</span><span class="line-value stat-control"><span id="attr-hth" data-key="hth"></span><span class="spinner-arrows"><span class="arrow up" data-key="hth" data-action="up">▲</span><span class="arrow down" data-key="hth" data-action="down">▼</span></span></span></div>
+            <div class="readout-line mt-0-75 font-size-1"><span class="line-key c-text-dim">LEVEL ALL PHYSICAL (36 XP)</span><span class="line-dots">......</span><span class="line-value stat-control"><span class="spinner-arrows"><span class="arrow up" data-action="up-physical-all">▲</span><span class="arrow down" data-action="down-physical-all">▼</span></span></span></div>
+        </div>
+        <div class="panel">
+            <div class="panel-legend"><span class="legend-text">Dependent</span></div>
+            <div class="readout-line">
+                <span class="line-key">HP (HIT POINTS)</span><span class="cost-tag" id="track-hp"></span><span class="line-dots">.........</span>
+                <span class="line-value">
+                    <span id="dep-hp-current" class="c-amber" data-key="current_hp" contenteditable="true"></span> 
+                    <span class="c-amber">/</span> 
+                <span class="stat-control c-blue"><span id="dep-hp" class="pointer" title="Reset HP"></span><span class="spinner-arrows"><span class="arrow up" data-key="bought_hp" data-action="up">▲</span><span class="arrow down" data-key="bought_hp" data-action="down">▼</span></span></span>
+                </span>
+            </div>
+            <div class="readout-line">
+                <span class="line-key">STUN</span><span class="cost-tag" id="track-stun"></span><span class="line-dots">....................</span>
+                <span class="line-value">
+                    <span id="dep-stun-current" class="c-amber" data-key="current_stun" contenteditable="true"></span> 
+                    <span class="c-amber">/</span> 
+                    <span class="stat-control c-blue"><span id="dep-stun" class="pointer" title="Reset STUN"></span><span class="spinner-arrows"><span class="arrow up" data-key="bought_stun" data-action="up">▲</span><span class="arrow down" data-key="bought_stun" data-action="down">▼</span></span></span>
+                </span>
+            </div>
+            <div class="readout-line"><span class="line-key">RES (RESILIENCE)</span><span class="cost-tag" id="track-res"></span><span class="line-dots">........</span><span class="line-value stat-control"><span id="dep-res"></span><span class="spinner-arrows"><span class="arrow up" data-key="bought_res" data-action="up">▲</span><span class="arrow down" data-key="bought_res" data-action="down">▼</span></span></span></div>
+            <div class="readout-line"><span class="line-key">RCT (REACTION)</span><span class="cost-tag" id="track-rct"></span><span class="line-dots">..........</span><span class="line-value stat-control"><span id="dep-rct"></span><span class="spinner-arrows"><span class="arrow up" data-key="bought_rct" data-action="up">▲</span><span class="arrow down" data-key="bought_rct" data-action="down">▼</span></span></span></div>
+        </div>
+    </div>
+
+    <div class="panel field-conditions-panel">
+        <div class="panel-legend"><span class="legend-text">Field Conditions</span></div>
+        <div class="grid-2-col mb-1-5">
+            <div>
+                <div class="readout-line">
+                    <span class="line-key" id="label-fatigue">FATIGUE</span><span class="line-dots">.............</span>
+                    <select id="sel-fatigue" data-key="fatigue" class="terminal-input mini inline-select right">
+                        <option value="Prime" class="bg-bg">Prime</option>
+                        <option value="Steady" class="bg-bg">Steady</option>
+                        <option value="Winded" class="bg-bg" selected>Winded</option>
+                        <option value="Strained" class="bg-bg">Strained</option>
+                        <option value="Exhausted" class="bg-bg">Exhausted</option>
+                    </select>
+                </div>
+                <div class="condition-note" id="note-fatigue">no benefits</div>
+            </div>
+            <div>
+                <div class="readout-line">
+                    <span class="line-key" id="label-composure">COMPOSURE</span><span class="line-dots">...........</span>
+                    <select id="sel-composure" data-key="composure" class="terminal-input mini inline-select right">
+                        <option value="Solid" class="bg-bg">Solid</option>
+                        <option value="Stable" class="bg-bg" selected>Stable</option>
+                        <option value="Shaken" class="bg-bg">Shaken</option>
+                        <option value="Compromised" class="bg-bg">Compromised</option>
+                    </select>
+                </div>
+                <div class="condition-note" id="note-composure">no benefits</div>
+            </div>
+        </div>
+        <div class="grid-2-col">
+            <div>
+                <div class="readout-line" title="Priority determines turn order."><span class="line-key">PRIORITY</span><span class="line-dots">..........</span><span class="line-value stat-control"><span id="cond-priority"></span></span></div>
+                <div class="readout-line"><span class="line-key">BASE SPEED</span><span class="line-dots">........</span><span class="line-value stat-control"><span id="cond-speed-base"></span></span></div>
+            </div>
+            <div>
+                <div class="readout-line"><span class="line-key">HALF SPEED</span><span class="line-dots">........</span><span class="line-value stat-control"><span id="cond-speed-half"></span></span></div>
+                <div class="readout-line"><span class="line-key">SPRINT SPEED</span><span class="line-dots">......</span><span class="line-value stat-control"><span id="cond-speed-sprint"></span></span></div>
+                <div class="readout-line d-none" id="cond-connection-row"><span class="line-key">CONNECTION</span><span class="line-dots">........</span><span class="line-value stat-control"><span id="cond-connection"></span></span></div>
+                <div class="readout-line d-none" id="cond-amps-row"><span class="line-key">AMPS</span><span class="line-dots">..............</span><span class="line-value"><span id="cond-amps-current" class="c-amber" data-key="current_amps" contenteditable="true"></span> <span class="c-amber">/</span> <span class="stat-control c-blue"><span id="cond-amps" class="pointer" title="Reset AMPs"></span></span></span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-2-col">
+        <div class="panel">
+            <div class="panel-legend"><span class="legend-text">Skills</span></div>
+            <ul class="bullet-list" id="list-adv"></ul>
+            <div class="add-entry-form">
+                <input type="text" id="new-skill-name" class="terminal-input mini flex-2" placeholder="Name">
+                <input type="text" id="new-skill-cost" class="terminal-input mini flex-1" placeholder="Cost">
+                <input type="text" id="new-skill-note" class="terminal-input mini flex-3" placeholder="Notes">
+                <button id="btn-add-skill" class="terminal-btn mini">ADD</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-legend"><span class="legend-text">Abilities</span></div>
+            <ul class="bullet-list" id="list-dis"></ul>
+            <div class="add-entry-form">
+                <input type="text" id="new-ability-name" class="terminal-input mini flex-2" placeholder="Name">
+                <input type="text" id="new-ability-cost" class="terminal-input mini flex-1" placeholder="Cost">
+                <input type="text" id="new-ability-note" class="terminal-input mini flex-3" placeholder="Notes">
+                <button id="btn-add-ability" class="terminal-btn mini">ADD</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-legend"><span class="legend-text">Equipped Gear Quick Reference</span></div>
+        <div class="grid-2-col" id="quick-ref-gear"></div>
+    </div>
+
+    <div class="flex-center flex-wrap gap-1 mt-2 text-center">
+        <button id="btn-toggle-equip" class="terminal-btn w-100 max-w-250">[ EQUIPPED GEAR ]</button>
+        <button id="btn-toggle-spells" class="terminal-btn hidden w-100 max-w-250">[ WYRD SPELLS ]</button>
+        <button id="btn-toggle-inv" class="terminal-btn w-100 max-w-250">[ INVENTORY ]</button>
+        <button id="btn-toggle-tut" class="terminal-btn w-100 max-w-250">[ TUTORIAL ]</button>
+        <button id="btn-toggle-ref" class="terminal-btn w-100 max-w-250">[ REFERENCE TABLES ]</button>
+        <button id="btn-main-menu" class="terminal-btn w-100 max-w-250">[ SYSTEM MENU ]</button>
+    </div>
+
+    <div id="reference-panel" class="panel hidden mt-1-5"></div>
+
+    <div id="equipped-panel" class="panel hidden mt-1-5">
+        <div class="panel-legend"><span class="legend-text">Equipped Gear</span> <span class="pointer c-text-dim font-size-0-8 ml-0-5 toggle-form" data-target="form-equip">[HIDE NEW]</span></div>
+        <ul class="bullet-list" id="list-equipped"></ul>
+        <div id="form-equip" class="add-entry-form form-wrap flex-col align-start gap-0-5">
+            <div class="flex-start w-100 gap-0-5 flex-wrap">
+                <div class="form-col flex-2 min-w-120">
+                    <label class="form-col-label">ITEM NAME</label>
+                    <input type="text" id="new-equip-name" class="terminal-input mini" placeholder="e.g. Kevlar Vest">
+                </div>
+                <div class="form-col flex-1 min-w-100">
+                    <label class="form-col-label">TYPE</label>
+                    <select id="new-equip-type" class="terminal-input mini bg-transparent c-text-primary">
+                        <option value="Weapon" class="bg-bg">Weapon</option>
+                        <option value="Armor" class="bg-bg">Armor</option>
+                        <option value="Bag" class="bg-bg">Bag</option>
+                        <option value="Clothing" class="bg-bg">Clothing</option>
+                        <option value="Accessory" class="bg-bg">Accessory</option>
+                    </select>
+                </div>
+                <div class="form-col flex-1 min-w-100">
+                    <label class="form-col-label">LOCATION</label>
+                    <select id="new-equip-loc" class="terminal-input mini bg-transparent c-text-primary">
+                        <option value="Head" class="bg-bg">Head</option>
+                        <option value="Torso" class="bg-bg">Torso</option>
+                        <option value="Back" class="bg-bg">Back</option>
+                        <option value="Arms" class="bg-bg">Arms</option>
+                        <option value="Hands" class="bg-bg">Hands</option>
+                        <option value="Legs" class="bg-bg">Legs</option>
+                        <option value="Feet" class="bg-bg">Feet</option>
+                        <option value="Belt" class="bg-bg">Belt</option>
+                    </select>
+                </div>
+                <div class="form-col flex-1 min-w-80">
+                    <label class="form-col-label">+ MAX SLOTS</label>
+                    <input type="number" id="new-equip-bonus" class="terminal-input mini" placeholder="e.g. 5">
+                </div>
+            </div>
+            <!-- NEW STATS ROW -->
+            <div class="flex-start w-100 gap-0-5 flex-wrap mt-0-5">
+                <div class="form-col flex-1 min-w-80">
+                    <label class="form-col-label">DP / DR</label>
+                    <input type="text" id="new-equip-dp" class="terminal-input mini" placeholder="e.g. 2d6 or 4">
+                </div>
+                <div class="form-col flex-1 min-w-80">
+                    <label class="form-col-label">PARRY / BLK</label>
+                    <input type="text" id="new-equip-parry" class="terminal-input mini" placeholder="e.g. +1 / +2">
+                </div>
+                <div class="form-col flex-1 min-w-80">
+                    <label class="form-col-label">RANGE</label>
+                    <input type="text" id="new-equip-range" class="terminal-input mini" placeholder="e.g. 10m">
+                </div>
+                <div class="form-col flex-1 min-w-80">
+                    <label class="form-col-label">ACCURACY</label>
+                    <input type="text" id="new-equip-acc" class="terminal-input mini" placeholder="e.g. +1">
+                </div>
+                <div class="form-col flex-1 min-w-80">
+                    <label class="form-col-label">DURABILITY</label>
+                    <input type="text" id="new-equip-dur" class="terminal-input mini" placeholder="e.g. 10/10">
+                </div>
+                <div class="form-col flex-2 min-w-120">
+                    <label class="form-col-label">EFFECTS</label>
+                    <input type="text" id="new-equip-effects" class="terminal-input mini" placeholder="e.g. Piercing">
+                </div>
+            </div>
+            <button id="btn-add-equip" class="terminal-btn mini mb-0-25 w-100">ADD TO LOADOUT</button>
+        </div>
+    </div>
+
+    <div id="spells-panel" class="panel hidden mt-1-5">
+        <div class="panel-legend"><span class="legend-text">Wyrd Spells</span> <span class="pointer c-text-dim font-size-0-8 ml-0-5 toggle-form" data-target="form-spells">[HIDE NEW]</span></div>
+        <ul class="bullet-list" id="list-spells"></ul>
+        <div id="form-spells" class="add-entry-form form-wrap">
+            <div class="form-col flex-2 min-w-120">
+                <label class="form-col-label">SPELL NAME</label>
+                <input type="text" id="new-spell-name" class="terminal-input mini" placeholder="e.g. Fireball">
+            </div>
+            <div class="form-col flex-1 min-w-80">
+                <label class="form-col-label">COST/TIER</label>
+                <input type="text" id="new-spell-cost" class="terminal-input mini" placeholder="e.g. 2 FP">
+            </div>
+            <div class="form-col flex-3 min-w-150">
+                <label class="form-col-label">NOTES</label>
+                <input type="text" id="new-spell-note" class="terminal-input mini" placeholder="e.g. Deals 2d6 dmg">
+            </div>
+            <button id="btn-add-spell" class="terminal-btn mini mb-0-25">ADD</button>
+        </div>
+    </div>
+
+    <div id="inventory-panel" class="panel hidden mt-1-5">
+        <div class="panel-legend"><span class="legend-text">Inventory & Storage</span> <span class="pointer c-text-dim font-size-0-8 ml-0-5 toggle-form" data-target="form-inv">[HIDE NEW]</span></div>
+        <div class="readout-line mb-1">
+            <span class="line-key">CAPACITY (SLOTS)</span><span class="line-dots">..........</span>
+            <span class="line-value"><span id="inv-used" class="c-amber">0</span> <span class="c-amber">/</span> <span id="inv-max" class="c-blue">0</span></span>
+        </div>
+        <ul class="bullet-list" id="list-inventory"></ul>
+        <div id="form-inv" class="add-entry-form form-wrap">
+            <div class="form-col flex-2 min-w-120">
+                <label class="form-col-label">ITEM NAME</label>
+                <input type="text" id="new-inv-name" class="terminal-input mini" placeholder="e.g. Medkit">
+            </div>
+            <div class="form-col flex-1 min-w-100">
+                <label class="form-col-label">SIZE</label>
+                <select id="new-inv-size" class="terminal-input mini bg-transparent c-text-primary">
+                    <option value="0.1" class="bg-bg">Tiny (1/10)</option>
+                    <option value="0.5" class="bg-bg">Small (1/2)</option>
+                    <option value="1" class="bg-bg" selected>Medium (1)</option>
+                    <option value="2" class="bg-bg">Large (2)</option>
+                    <option value="3" class="bg-bg">Oversized (3+)</option>
+                </select>
+            </div>
+            <div class="form-col flex-0-5 min-w-60">
+                <label class="form-col-label">QTY</label>
+                <input type="number" id="new-inv-qty" class="terminal-input mini" placeholder="1" value="1" min="1">
+            </div>
+            <button id="btn-add-inv" class="terminal-btn mini mb-0-25">ADD</button>
+        </div>
+        <div class="item-note d-block mt-1">
+            > BASE SLOTS = STR + 2. Your 2 hands count towards this total and can hold 1 slot each.<br>
+            > Items of the exact same type implicitly share slots based on size limitations.
+        </div>
+    </div>
+
+    <div id="tutorial-panel" class="panel hidden mt-1-5">
+        <div class="panel-legend"><span class="legend-text">System Tutorial</span></div>
+        <ul class="bullet-list c-text-dim">
+            <li class="mb-1"><span class="c-green">EDITING DATA:</span> Click on any underlined text (like your Name or Point Total) to type directly into the sheet. Changes automatically save.</li>
+            <li class="mb-1"><span class="c-green">ADJUSTING STATS:</span> Use the <span class="c-amber">▲</span> and <span class="c-amber">▼</span> arrows to scale your Mental and Physical characteristics between 1 and 20.</li>
+            <li class="mb-1"><span class="c-green">HEALING HP/STUN:</span> Current values are shown in <strong class="c-amber">Yellow</strong>. Base values are <strong class="c-blue">Blue</strong>. Click the blue base value to instantly reset your current HP or STUN back to full.</li>
+            <li class="mb-1"><span class="c-green">SKILLS & ABILITIES:</span> Fill out the mini forms to add entries. Click or hover over them to view their notes.</li>
+            <li class="mb-1"><span class="c-green">DELETING ENTRIES:</span> Click <strong class="c-red">[DELETE ITEM]</strong> inside the expanded notes of Skills, Abilities, Inventory, or Equipped Gear to quickly remove the entry.</li>
+            <li class="mb-1"><span class="c-green">INVENTORY SLOTS:</span> Base slots equal your STR + 2 (hands are included). If you equip a storage item, put its extra capacity into the "+ MAX SLOTS" box to increase your overall carrying limit.</li>
+            <li class="mb-1"><span class="c-green">ITEM SIZES:</span> Like items automatically pool slots together. Two "Small (1/2)" medkits will magically combine to fit perfectly into a single slot!</li>
+        </ul>
+    </div>
+
+    <div class="flex-center flex-wrap gap-1 mt-2 mb-2 text-center">
+        <button id="btn-export" class="terminal-btn">EXPORT DOSSIER (JSON)</button>
+        <button id="btn-export-pdf" class="terminal-btn">PRINT TO PDF</button>
+    </div>
+</div>
+
+<script src="class_Anomalist.html"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        if (!sessionStorage.getItem('booted')) {
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        // Immediately remove the flag so refreshing forces a reboot sequence
+        sessionStorage.removeItem('booted');
+
+        const rawData = localStorage.getItem('active_character');
+        if (!rawData) {
+            window.location.href = 'index.html';
+            return;
+        }
+        let characterData = JSON.parse(rawData);
+
+        window.OEShared.initTheme();
+
+        const charClass = document.getElementById('char-class');
+        const charSubclass = document.getElementById('char-subclass');
+
+        Object.keys(window.OEShared.classTemplates).forEach(cls => {
+            charClass.add(new Option(cls, cls));
+        });
+
+        const updateSubclassOptions = window.OEShared.updateSubclassOptions;
+        const autoSaveDossier = () => window.OEShared.autoSaveDossier(characterData);
+
+        charClass.addEventListener('change', (e) => {
+            characterData.class = e.target.value;
+            updateSubclassOptions(e.target.value, charSubclass);
+            characterData.subclass = charSubclass.value;
+            autoSaveDossier();
+            populateSheet();
+        });
+        
+        charSubclass.addEventListener('change', (e) => {
+            characterData.subclass = e.target.value;
+            autoSaveDossier();
+            populateSheet();
+        });
+
+        document.getElementById('main-sheet').addEventListener('change', (e) => {
+            if (e.target.tagName === 'SELECT' && e.target.hasAttribute('data-key')) {
+                const key = e.target.getAttribute('data-key');
+                characterData[key] = e.target.value;
+                autoSaveDossier();
+                populateSheet();
+            }
+        });
+
+        document.getElementById('main-sheet').addEventListener('input', (e) => {
+            if (e.target.hasAttribute('contenteditable')) {
+                const key = e.target.getAttribute('data-key');
+                if (key) {
+                    characterData[key] = e.target.textContent.trim();
+                    if (key === 'current_hp') validateCompromised(); 
+                    autoSaveDossier();
+                }
+            }
+        });
+
+        document.getElementById('dep-hp-current').addEventListener('focus', function() {
+            const range = document.createRange();
+            range.selectNodeContents(this);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        });
+
+        document.getElementById('dep-stun-current').addEventListener('focus', function() {
+            const range = document.createRange();
+            range.selectNodeContents(this);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        });
+
+        document.getElementById('dep-stun').addEventListener('click', () => {
+            if (characterData.stun !== undefined) {
+                characterData.current_stun = characterData.stun;
+                document.getElementById('dep-stun-current').textContent = characterData.current_stun;
+                autoSaveDossier();
+            }
+        });
+
+        document.getElementById('cond-amps-current').addEventListener('focus', function() {
+            const range = document.createRange();
+            range.selectNodeContents(this);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        });
+
+        document.getElementById('cond-amps').addEventListener('click', () => {
+            if (characterData.amps !== undefined) {
+                characterData.current_amps = characterData.amps;
+                document.getElementById('cond-amps-current').textContent = characterData.current_amps;
+                autoSaveDossier();
+            }
+        });
+
+        document.getElementById('dep-hp').addEventListener('click', () => {
+            if (characterData.hp !== undefined) {
+                characterData.current_hp = characterData.hp;
+                document.getElementById('dep-hp-current').textContent = characterData.current_hp;
+                validateCompromised();
+                autoSaveDossier();
+            }
+        });
+
+        document.getElementById('main-sheet').addEventListener('click', (e) => {
+            if (e.target.classList.contains('arrow')) {
+                const action = e.target.getAttribute('data-action');
+                const key = e.target.getAttribute('data-key');
+                
+                if (action === 'up-mental-all') {
+                    characterData.int = Math.min(20, (parseInt(characterData.int)||10) + 1);
+                    characterData.con = Math.min(20, (parseInt(characterData.con)||10) + 1);
+                    characterData.will = Math.min(20, (parseInt(characterData.will)||10) + 1);
+                    characterData.per = Math.min(20, (parseInt(characterData.per)||10) + 1);
+                    populateSheet(); autoSaveDossier(); return;
+                } else if (action === 'down-mental-all') {
+                    characterData.int = Math.max(1, (parseInt(characterData.int)||10) - 1);
+                    characterData.con = Math.max(1, (parseInt(characterData.con)||10) - 1);
+                    characterData.will = Math.max(1, (parseInt(characterData.will)||10) - 1);
+                    characterData.per = Math.max(1, (parseInt(characterData.per)||10) - 1);
+                    populateSheet(); autoSaveDossier(); return;
+                } else if (action === 'up-physical-all') {
+                    characterData.str = Math.min(20, (parseInt(characterData.str)||10) + 1);
+                    characterData.dex = Math.min(20, (parseInt(characterData.dex)||10) + 1);
+                    characterData.hth = Math.min(20, (parseInt(characterData.hth)||10) + 1);
+                    populateSheet(); autoSaveDossier(); return;
+                } else if (action === 'down-physical-all') {
+                    characterData.str = Math.max(1, (parseInt(characterData.str)||10) - 1);
+                    characterData.dex = Math.max(1, (parseInt(characterData.dex)||10) - 1);
+                    characterData.hth = Math.max(1, (parseInt(characterData.hth)||10) - 1);
+                    populateSheet(); autoSaveDossier(); return;
+                }
+                
+                if (key) {
+                    let val = parseInt(characterData[key]);
+                    if (isNaN(val)) val = (key.startsWith('bought_') || key.startsWith('gift_')) ? 0 : (key === 'level' ? 1 : 10);
+                    
+                    if (action === 'up') {
+                        const maxLimits = ['int', 'con', 'will', 'per', 'str', 'dex', 'hth'];
+                        if (maxLimits.includes(key) && val >= 20) return;
+                        val++;
+                    } else if (action === 'down') {
+                        const minLimits = ['int', 'con', 'will', 'per', 'str', 'dex', 'hth'];
+                        if (minLimits.includes(key) && val <= 1) return;
+                        if (key === 'level' && val <= 1) return;
+                        if (key.startsWith('gift_') && val <= 0) return; 
+                        val--;
+                    }
+                    
+                    characterData[key] = val;
+                    populateSheet();
+                    autoSaveDossier();
+                }
+            }
+        });
+
+        document.getElementById('main-sheet').addEventListener('keydown', (e) => {
+            if (e.target.hasAttribute('contenteditable') && e.key === 'Enter') {
+                e.preventDefault();
+                e.target.blur();
+            }
+        });
+
+        const addListEntry = (listKey, nameId, costId, noteId) => {
+            const name = document.getElementById(nameId).value.trim();
+            const cost = document.getElementById(costId).value.trim();
+            const note = document.getElementById(noteId).value.trim();
+            if (name) {
+                if (!characterData[listKey]) characterData[listKey] = [];
+                characterData[listKey].push({ name, cost: cost || '0', note });
+                populateSheet();
+                document.getElementById(nameId).value = '';
+                document.getElementById(costId).value = '';
+                document.getElementById(noteId).value = '';
+                autoSaveDossier();
+            }
+        };
+
+        document.getElementById('btn-add-skill').addEventListener('click', () => addListEntry('adv', 'new-skill-name', 'new-skill-cost', 'new-skill-note'));
+        document.getElementById('btn-add-ability').addEventListener('click', () => addListEntry('dis', 'new-ability-name', 'new-ability-cost', 'new-ability-note'));
+
+        const handleListDelete = (e, className, listKey) => {
+            if (e.target.classList.contains(className)) {
+                e.preventDefault();
+                const idx = e.target.getAttribute('data-idx');
+                characterData[listKey].splice(idx, 1);
+                populateSheet();
+                autoSaveDossier();
+            }
+        };
+
+        document.getElementById('btn-toggle-spells').addEventListener('click', function() {
+            document.getElementById('spells-panel').classList.toggle('hidden');
+            this.classList.toggle('active');
+        });
+        
+        document.getElementById('list-spells').addEventListener('click', (e) => handleListDelete(e, 'del-spell', 'spells'));
+        document.getElementById('btn-add-spell').addEventListener('click', () => addListEntry('spells', 'new-spell-name', 'new-spell-cost', 'new-spell-note'));
+
+        document.getElementById('btn-toggle-equip').addEventListener('click', function() {
+            document.getElementById('equipped-panel').classList.toggle('hidden');
+            this.classList.toggle('active');
+        });
+
+        document.getElementById('btn-toggle-inv').addEventListener('click', function() {
+            document.getElementById('inventory-panel').classList.toggle('hidden');
+            this.classList.toggle('active');
+        });
+
+        document.getElementById('btn-toggle-tut').addEventListener('click', function() {
+            document.getElementById('tutorial-panel').classList.toggle('hidden');
+            this.classList.toggle('active');
+        });
+
+        document.getElementById('btn-toggle-ref')?.addEventListener('click', function() {
+            document.getElementById('reference-panel').classList.toggle('hidden');
+            this.classList.toggle('active');
+        });
+
+        document.getElementById('btn-main-menu')?.addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+
+        document.querySelectorAll('.toggle-form').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetId = e.target.getAttribute('data-target');
+                const targetEl = document.getElementById(targetId);
+                if (targetEl) {
+                    targetEl.classList.toggle('d-none');
+                    if (targetEl.classList.contains('d-none')) {
+                        e.target.textContent = '[SHOW NEW]';
+                    } else {
+                        e.target.textContent = '[HIDE NEW]';
+                    }
+                }
+            });
+        });
+
+        document.getElementById('list-equipped').addEventListener('click', (e) => handleListDelete(e, 'del-equip', 'equipped'));
+
+        document.getElementById('btn-add-equip').addEventListener('click', () => {
+            const name = document.getElementById('new-equip-name').value.trim();
+            const type = document.getElementById('new-equip-type').value;
+            const loc = document.getElementById('new-equip-loc').value;
+            const bonus = parseFloat(document.getElementById('new-equip-bonus').value) || 0;
+            
+            const dp_dr = document.getElementById('new-equip-dp').value.trim();
+            const parry = document.getElementById('new-equip-parry').value.trim();
+            const range = document.getElementById('new-equip-range').value.trim();
+            const acc = document.getElementById('new-equip-acc').value.trim();
+            const dur = document.getElementById('new-equip-dur').value.trim();
+            const effects = document.getElementById('new-equip-effects').value.trim();
+            
+            if (name) {
+                if (!characterData.equipped) characterData.equipped = [];
+                characterData.equipped.push({ name, type, loc, bonus, dp_dr, parry, range, acc, dur, effects });
+                populateSheet();
+                document.getElementById('new-equip-name').value = '';
+                document.getElementById('new-equip-bonus').value = '';
+                document.getElementById('new-equip-dp').value = '';
+                document.getElementById('new-equip-parry').value = '';
+                document.getElementById('new-equip-range').value = '';
+                document.getElementById('new-equip-acc').value = '';
+                document.getElementById('new-equip-dur').value = '';
+                document.getElementById('new-equip-effects').value = '';
+                autoSaveDossier();
+            }
+        });
+
+        document.getElementById('list-inventory').addEventListener('click', (e) => handleListDelete(e, 'del-inv', 'inventory'));
+
+        document.getElementById('btn-add-inv').addEventListener('click', () => {
+            const name = document.getElementById('new-inv-name').value.trim();
+            const size = parseFloat(document.getElementById('new-inv-size').value);
+            const qty = parseInt(document.getElementById('new-inv-qty').value) || 1;
+            
+            if (name) {
+                if (!characterData.inventory) characterData.inventory = [];
+                characterData.inventory.push({ name, size, qty });
+                populateSheet();
+                document.getElementById('new-inv-name').value = '';
+                document.getElementById('new-inv-qty').value = '1';
+                autoSaveDossier();
+            }
+        });
+
+        function calculateDerived() {
+            const level = parseInt(characterData.level) || 1;
+            const gift_xp = parseInt(characterData.gift_xp) || 0;
+            const gift_ap = parseInt(characterData.gift_ap) || 0;
+            
+            characterData.total_xp = (level * 10) + gift_xp;
+            characterData.total_ap = (level * 2) + gift_ap;
+            characterData.total_pp = Math.max(0, level - 20);
+
+            const str = parseInt(characterData.str) || 10;
+            const dex = parseInt(characterData.dex) || 10;
+            const hth = parseInt(characterData.hth) || 10;
+            const int = parseInt(characterData.int) || 10;
+            const con = parseInt(characterData.con) || 10;
+            const will = parseInt(characterData.will) || 10;
+            const per = parseInt(characterData.per) || 10;
+            
+            const base_hp = hth + Math.max(0, str - 8);
+            characterData.hp = base_hp + (parseInt(characterData.bought_hp) || 0);
+            if (characterData.current_hp === undefined) characterData.current_hp = characterData.hp;
+            
+            const base_stun = characterData.hp; 
+            characterData.stun = base_stun + (parseInt(characterData.bought_stun) || 0);
+            if (characterData.current_stun === undefined) characterData.current_stun = characterData.stun;
+            
+            const base_res = Math.floor((hth + con) / 4);
+            characterData.res = base_res + (parseInt(characterData.bought_res) || 0);
+            
+            let base_rct = Math.floor((int + per) / 2) - 9;
+            let total_rct = base_rct + (parseInt(characterData.bought_rct) || 0);
+            characterData.rct = Math.min(5, Math.max(-3, total_rct));
+
+            characterData.priority = Math.floor((per + dex) / 4);
+            characterData.speed_base = Math.floor(dex / 2);
+            characterData.speed_half = characterData.speed_base / 2;
+            characterData.speed_sprint = dex;
+
+            characterData.connection = Math.floor(will / 4);
+            characterData.amps = characterData.connection * will;
+            if (characterData.current_amps === undefined) characterData.current_amps = characterData.amps;
+
+            let spent_xp_attrs = 0;
+            
+            let m_int = int - 10, m_con = con - 10, m_will = will - 10, m_per = per - 10;
+            let m_pkg = 0;
+            if (m_int > 0 && m_con > 0 && m_will > 0 && m_per > 0) m_pkg = Math.min(m_int, m_con, m_will, m_per);
+            else if (m_int < 0 && m_con < 0 && m_will < 0 && m_per < 0) m_pkg = Math.max(m_int, m_con, m_will, m_per);
+            
+            spent_xp_attrs += m_pkg * 35;
+            spent_xp_attrs += (m_int - m_pkg) * 15;
+            spent_xp_attrs += (m_con - m_pkg) * 10;
+            spent_xp_attrs += (m_will - m_pkg) * 10;
+            spent_xp_attrs += (m_per - m_pkg) * 10;
+            
+            let p_str = str - 10, p_dex = dex - 10, p_hth = hth - 10;
+            let p_pkg = 0;
+            if (p_str > 0 && p_dex > 0 && p_hth > 0) p_pkg = Math.min(p_str, p_dex, p_hth);
+            else if (p_str < 0 && p_dex < 0 && p_hth < 0) p_pkg = Math.max(p_str, p_dex, p_hth);
+            
+            spent_xp_attrs += p_pkg * 36;
+            spent_xp_attrs += (p_str - p_pkg) * 15;
+            spent_xp_attrs += (p_dex - p_pkg) * 15;
+            spent_xp_attrs += (p_hth - p_pkg) * 10;
+            
+            spent_xp_attrs += (parseInt(characterData.bought_hp) || 0) * 5;
+            spent_xp_attrs += (parseInt(characterData.bought_stun) || 0) * 5;
+            spent_xp_attrs += (parseInt(characterData.bought_res) || 0) * 10;
+            spent_xp_attrs += (parseInt(characterData.bought_rct) || 0) * 10;
+            
+            let spent_xp_skills = 0;
+            if (characterData.adv && characterData.adv.length > 0) { 
+                characterData.adv.forEach(item => spent_xp_skills += parseInt(item.cost) || 0);
+            }
+
+            let spent_ap_abilities = 0;
+            if (characterData.dis && characterData.dis.length > 0) {
+                characterData.dis.forEach(item => spent_ap_abilities += parseInt(item.cost) || 0);
+            }
+
+            characterData.spent_xp = spent_xp_attrs + spent_xp_skills;
+            characterData.rem_xp = characterData.total_xp - characterData.spent_xp;
+            
+            characterData.spent_ap = spent_ap_abilities;
+            characterData.rem_ap = characterData.total_ap - characterData.spent_ap;
+        }
+
+        function validateCompromised() {
+            const curHp = parseInt(characterData.current_hp);
+            const maxHp = parseInt(characterData.hp) || 0;
+            const resVal = parseInt(characterData.res) || 0;
+            const actualCurHp = isNaN(curHp) ? maxHp : curHp;
+
+            const resElement = document.getElementById('dep-res');
+            if (actualCurHp < (maxHp - resVal)) {
+                resElement.classList.add('c-red');
+                resElement.parentElement.parentElement.title = "WARNING: HP is Compromised";
+            } else { 
+                resElement.classList.remove('c-red'); 
+                resElement.parentElement.parentElement.title = ""; 
+            }
+        }
+
+        function populateSheet() {
+            calculateDerived();
+
+            document.getElementById('char-name').textContent = characterData.name || "UNKNOWN";
+            document.getElementById('char-player').textContent = characterData.player || "UNKNOWN";
+            
+            const currentClass = characterData.class || "Soldier";
+            charClass.value = currentClass;
+            updateSubclassOptions(currentClass, charSubclass, characterData.subclass);
+
+            const clsData = window.OEShared.classTemplates[currentClass];
+            const casterType = (clsData && clsData.casters) ? clsData.casters[characterData.subclass] : null;
+            
+            if (casterType) {
+                document.getElementById('cond-connection-row').style.display = 'flex';
+                document.getElementById('btn-toggle-spells').classList.remove('hidden');
+                document.getElementById('btn-toggle-spells').textContent = `[ ${casterType.toUpperCase()} SPELLS ]`;
+                document.querySelector('#spells-panel .legend-text').textContent = `${casterType} Spells`;
+            } else {
+                document.getElementById('cond-connection-row').style.display = 'none';
+                document.getElementById('btn-toggle-spells').classList.add('hidden');
+                document.getElementById('spells-panel').classList.add('hidden');
+                document.getElementById('btn-toggle-spells').classList.remove('active');
+            }
+            
+            if (casterType === 'Vessel') {
+                document.getElementById('cond-amps-row').style.display = 'flex';
+                document.getElementById('cond-amps').textContent = characterData.amps || 0;
+                document.getElementById('cond-amps-current').textContent = characterData.current_amps !== undefined ? characterData.current_amps : (characterData.amps || 0);
+            } else {
+                document.getElementById('cond-amps-row').style.display = 'none';
+            }
+
+            document.getElementById('char-level').textContent = characterData.level || "1";
+            document.getElementById('char-gift-xp').textContent = characterData.gift_xp || "0";
+            document.getElementById('char-gift-ap').textContent = characterData.gift_ap || "0";
+            document.getElementById('char-xp-rem').textContent = characterData.rem_xp;
+            document.getElementById('char-xp-tot').textContent = characterData.total_xp;
+            document.getElementById('char-ap-rem').textContent = characterData.rem_ap;
+            document.getElementById('char-ap-tot').textContent = characterData.total_ap;
+            
+            const ppContainer = document.getElementById('pp-container');
+            if (characterData.total_pp > 0) {
+                ppContainer.style.display = 'block';
+                document.getElementById('char-pp').textContent = `${characterData.total_pp} PP`;
+            } else { ppContainer.style.display = 'none'; }
+
+            document.getElementById('attr-int').textContent = characterData.int || "10";
+            document.getElementById('attr-con').textContent = characterData.con || "10";
+            document.getElementById('attr-will').textContent = characterData.will || "10";
+            document.getElementById('attr-per').textContent = characterData.per || "10";
+
+            document.getElementById('attr-str').textContent = characterData.str || "10";
+            document.getElementById('attr-dex').textContent = characterData.dex || "10";
+            document.getElementById('attr-hth').textContent = characterData.hth || "10";
+
+            document.getElementById('dep-hp-current').textContent = characterData.current_hp !== undefined ? characterData.current_hp : (characterData.hp || "20");
+            document.getElementById('dep-hp').textContent = characterData.hp || "20";
+            document.getElementById('dep-stun-current').textContent = characterData.current_stun !== undefined ? characterData.current_stun : (characterData.stun || "20");
+            document.getElementById('dep-stun').textContent = characterData.stun || "20";
+            document.getElementById('dep-res').textContent = characterData.res || "20";
+            document.getElementById('dep-rct').textContent = characterData.rct || "10";
+
+            document.getElementById('cond-priority').textContent = characterData.priority || 0;
+            document.getElementById('cond-speed-base').textContent = characterData.speed_base || 0;
+            document.getElementById('cond-speed-half').textContent = characterData.speed_half || 0;
+            document.getElementById('cond-speed-sprint').textContent = characterData.speed_sprint || 0;
+            document.getElementById('cond-connection').textContent = characterData.connection || 10;
+
+            const fatigue = characterData.fatigue || "Winded";
+            document.getElementById('sel-fatigue').value = fatigue;
+            const noteFatigue = document.getElementById('note-fatigue');
+            const labelFatigue = document.getElementById('label-fatigue');
+            const selFatigue = document.getElementById('sel-fatigue');
+            
+            selFatigue.classList.remove('c-red');
+            labelFatigue.classList.remove('c-red');
+            if (fatigue === "Prime") noteFatigue.textContent = "+2 on CON rolls for Exertion";
+            else if (fatigue === "Steady") noteFatigue.textContent = "+1 CON for Exertion";
+            else if (fatigue === "Winded") noteFatigue.textContent = "no benefits";
+            else if (fatigue === "Strained") noteFatigue.textContent = "-1 to all CON rolls";
+            else if (fatigue === "Exhausted") { 
+                noteFatigue.textContent = "-1 to all CON rolls, can no longer perform exertions"; 
+                selFatigue.classList.add('c-red'); 
+                labelFatigue.classList.add('c-red'); 
+            }
+
+            const composure = characterData.composure || "Stable";
+            document.getElementById('sel-composure').value = composure;
+            const noteComposure = document.getElementById('note-composure');
+            const labelComposure = document.getElementById('label-composure');
+            const selComposure = document.getElementById('sel-composure');
+            
+            selComposure.classList.remove('c-red');
+            labelComposure.classList.remove('c-red');
+            if (composure === "Solid") noteComposure.textContent = "+1 to WILL rolls for composure";
+            else if (composure === "Stable") noteComposure.textContent = "no benefits";
+            else if (composure === "Shaken") noteComposure.textContent = "-1 to WILL";
+            else if (composure === "Compromised") { 
+                noteComposure.textContent = "-3 to WILL" + (casterType === 'Conduit' ? ", you can no longer cast using Composure and must resort to casting using your own HP." : ""); 
+                selComposure.classList.add('c-red'); 
+                labelComposure.classList.add('c-red'); 
+            }
+
+            const attributes = ['int', 'con', 'will', 'per', 'str', 'dex', 'hth'];
+            attributes.forEach(attr => {
+                const bought = (parseInt(characterData[attr]) || 10) - 10;
+                const el = document.getElementById(`track-${attr}`);
+                if (el) {
+                    if (bought > 0) el.textContent = `[+${bought}]`;
+                    else if (bought < 0) el.textContent = `[${bought}]`;
+                    else el.textContent = '';
+                }
+            });
+            const dependents = ['hp', 'stun', 'res', 'rct'];
+            dependents.forEach(dep => {
+                const bought = parseInt(characterData[`bought_${dep}`]) || 0;
+                const el = document.getElementById(`track-${dep}`);
+                if (el) {
+                    if (bought > 0) el.textContent = `[+${bought}]`;
+                    else if (bought < 0) el.textContent = `[${bought}]`;
+                    else el.textContent = '';
+                }
+            });
+
+            validateCompromised(); 
+
+            const advList = document.getElementById('list-adv');
+            advList.innerHTML = '';
+            if (characterData.adv && characterData.adv.length > 0) {
+                characterData.adv.forEach(item => {
+                    const noteHtml = item.note ? `<div class="item-note">${item.note}</div>` : '';
+                    advList.innerHTML += `<li>${item.name} <span class="cost-tag">[${item.cost}]</span>${noteHtml}</li>`;
+                });
+            } else {
+                advList.innerHTML = '<li>NO DATA <span class="cost-tag">[0]</span></li>';
+            }
+
+            const disList = document.getElementById('list-dis');
+            disList.innerHTML = '';
+            if (characterData.dis && characterData.dis.length > 0) {
+                characterData.dis.forEach(item => {
+                    const noteHtml = item.note ? `<div class="item-note">${item.note}</div>` : '';
+                    disList.innerHTML += `<li>${item.name} <span class="cost-tag">[${item.cost}]</span>${noteHtml}</li>`;
+                });
+            } else {
+                disList.innerHTML = '<li>NO DATA <span class="cost-tag">[0]</span></li>';
+            }
+            
+            const spellList = document.getElementById('list-spells');
+            spellList.innerHTML = '';
+            if (characterData.spells && characterData.spells.length > 0) {
+                characterData.spells.forEach((item, index) => {
+                    const noteHtml = item.note ? `<div class="item-note">${item.note} <br><a href="#" class="del-spell c-red mt-0-5 d-inline-block" data-idx="${index}">[DELETE SPELL]</a></div>` : `<div class="item-note"><a href="#" class="del-spell c-red mt-0-5 d-inline-block" data-idx="${index}">[DELETE SPELL]</a></div>`;
+                    spellList.innerHTML += `<li>${item.name} <span class="cost-tag">[${item.cost}]</span>${noteHtml}</li>`;
+                });
+            } else {
+                spellList.innerHTML = '<li>NO SPELL DATA <span class="cost-tag">[0]</span></li>';
+            }
+
+            const equipList = document.getElementById('list-equipped');
+            equipList.innerHTML = '';
+            let bonusSlots = 0;
+            
+            if (characterData.equipped && characterData.equipped.length > 0) {
+                characterData.equipped.forEach((item, index) => {
+                    if (item.bonus) bonusSlots += parseFloat(item.bonus);
+                    const bonusText = item.bonus ? ` [+${item.bonus} Max Slots]` : '';
+                    
+                    let statsText = '';
+                    if (item.dp_dr) statsText += ` | DP/DR: ${item.dp_dr}`;
+                    if (item.parry) statsText += ` | P/B: ${item.parry}`;
+                    if (item.range) statsText += ` | RNG: ${item.range}`;
+                    if (item.acc) statsText += ` | ACC: ${item.acc}`;
+                    if (item.dur) statsText += ` | DUR: ${item.dur}`;
+                    if (item.effects) statsText += ` | EFF: ${item.effects}`;
+                    
+                    equipList.innerHTML += `<li>${item.name} <span class="cost-tag">[${item.type} - ${item.loc}]</span> <div class="item-note">${bonusText}${statsText} <br><a href="#" class="del-equip c-red mt-0-5 d-inline-block" data-idx="${index}">[DELETE ITEM]</a></div></li>`;
+                });
+            } else {
+                equipList.innerHTML = '<li>NO EQUIPPED DATA <span class="cost-tag">[0]</span></li>';
+            }
+
+            const refGearList = document.getElementById('quick-ref-gear');
+            refGearList.innerHTML = '';
+            let hasRefGear = false;
+
+            if (characterData.equipped && characterData.equipped.length > 0) {
+                characterData.equipped.forEach((item) => {
+                    if (item.type === 'Weapon' || item.type === 'Armor') {
+                        hasRefGear = true;
+                        let statsHtml = [];
+                        if (item.dp_dr) statsHtml.push(`<span class="c-amber">[${item.type === 'Weapon' ? 'DP' : 'DR'}: ${item.dp_dr}]</span>`);
+                        if (item.parry) statsHtml.push(`<span class="c-amber">[PARRY/BLK: ${item.parry}]</span>`);
+                        if (item.range) statsHtml.push(`<span class="c-amber">[RNG: ${item.range}]</span>`);
+                        if (item.acc) statsHtml.push(`<span class="c-amber">[ACC: ${item.acc}]</span>`);
+                        if (item.dur) statsHtml.push(`<span class="c-amber">[DUR: ${item.dur}]</span>`);
+                        
+                        let effectHtml = item.effects ? `<div class="c-text-dim font-size-1 mt-0-25">>> EFFECTS: ${item.effects}</div>` : '';
+                        
+                        refGearList.innerHTML += `<div class="mb-1"><div class="c-green font-size-1">> <strong>${item.name}</strong> <span class="c-text-dim">(${item.type})</span></div><div class="mt-0-25 font-size-1">${statsHtml.join(' ')}</div>${effectHtml}</div>`;
+                    }
+                });
+            }
+
+            if (!hasRefGear) {
+                refGearList.innerHTML = '<div class="c-text-dim">NO EQUIPPED WEAPONS OR ARMOR DETECTED.</div>';
+            }
+
+            const invList = document.getElementById('list-inventory');
+            invList.innerHTML = '';
+            let usedSlots = 0;
+            
+            if (characterData.inventory && characterData.inventory.length > 0) {
+                characterData.inventory.forEach((item, index) => {
+                    const slots = Math.ceil(item.qty * item.size);
+                    usedSlots += slots;
+                    
+                    const sizeLabel = item.size == 0.1 ? 'Tiny' : item.size == 0.5 ? 'Small' : item.size == 1 ? 'Med' : item.size == 2 ? 'Large' : 'Oversized';
+                    
+                    invList.innerHTML += `<li>${item.name} (x${item.qty}) <span class="cost-tag">[${slots} Slot${slots !== 1 ? 's' : ''}]</span> <div class="item-note">Size: ${sizeLabel} | Qty: ${item.qty} <br><a href="#" class="del-inv c-red mt-0-5 d-inline-block" data-idx="${index}">[DELETE ITEM]</a></div></li>`;
+                });
+            } else {
+                invList.innerHTML = '<li>NO INVENTORY DATA <span class="cost-tag">[0]</span></li>';
+            }
+            
+            const maxSlots = (parseInt(characterData.str) || 10) + 2 + bonusSlots;
+            document.getElementById('inv-used').textContent = usedSlots;
+            document.getElementById('inv-max').textContent = maxSlots;
+            document.getElementById('inv-used').style.color = usedSlots > maxSlots ? 'var(--c-red)' : 'var(--c-amber)';
+        }
+
+        document.getElementById('btn-export').addEventListener('click', async () => {
+            const dataStr = JSON.stringify(characterData, null, 2);
+            const safeName = characterData.name ? characterData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() : 'operative';
+            const defaultFilename = `${safeName}_dossier.json`;
+
+            if (window.showSaveFilePicker) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: defaultFilename,
+                        types: [{ description: 'JSON File', accept: {'application/json': ['.json']} }]
+                    });
+                    const writable = await handle.createWritable();
+                    await writable.write(dataStr);
+                    await writable.close();
+                } catch (err) {
+                    if (err.name !== 'AbortError') fallbackDownload(dataStr, defaultFilename);
+                }
+            } else {
+                fallbackDownload(dataStr, defaultFilename);
+            }
+        });
+
+        function fallbackDownload(dataStr, filename) {
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        document.getElementById('btn-export-pdf').addEventListener('click', () => {
+            document.getElementById('pdf-export-screen').classList.remove('hidden');
+        });
+
+        document.getElementById('btn-pdf-cancel').addEventListener('click', () => {
+            document.getElementById('pdf-export-screen').classList.add('hidden');
+        });
+
+        document.getElementById('btn-pdf-full').addEventListener('click', () => executePrint('full'));
+        document.getElementById('btn-pdf-partial').addEventListener('click', () => executePrint('partial'));
+        document.getElementById('btn-pdf-blank').addEventListener('click', () => executePrint('blank'));
+
+        function executePrint(mode) {
+            document.getElementById('pdf-export-screen').classList.add('hidden');
+            
+            const equipPanel = document.getElementById('equipped-panel');
+            const invPanel = document.getElementById('inventory-panel');
+            const spellsPanel = document.getElementById('spells-panel');
+            const wasEquipHidden = equipPanel.classList.contains('hidden');
+            const wasInvHidden = invPanel.classList.contains('hidden');
+            const wasSpellsHidden = spellsPanel.classList.contains('hidden');
+            
+            equipPanel.classList.remove('hidden');
+            invPanel.classList.remove('hidden');
+            
+            const clsDataPrint = window.OEShared.classTemplates[characterData.class || "Soldier"];
+            if (clsDataPrint && clsDataPrint.casters && clsDataPrint.casters[characterData.subclass]) spellsPanel.classList.remove('hidden');
+            
+            const notesEl = document.createElement('div');
+            notesEl.id = 'print-extra-notes';
+            notesEl.className = 'panel';
+            notesEl.innerHTML = '<div class="panel-legend"><span class="legend-text">Field Notes</span></div><div style="border-bottom: 1px solid #000; height: 2rem; margin-bottom: 0.5rem;"></div><div style="border-bottom: 1px solid #000; height: 2rem; margin-bottom: 0.5rem;"></div><div style="border-bottom: 1px solid #000; height: 2rem; margin-bottom: 0.5rem;"></div><div style="border-bottom: 1px solid #000; height: 2rem; margin-bottom: 0.5rem;"></div><div style="border-bottom: 1px solid #000; height: 2rem; margin-bottom: 0.5rem;"></div>';
+            
+            if (mode === 'partial' || mode === 'blank') {
+                document.getElementById('main-sheet').insertBefore(notesEl, document.getElementById('btn-export').parentElement);
+                
+                document.getElementById('dep-hp-current').textContent = "____";
+                document.getElementById('dep-stun-current').textContent = "____";
+            if (document.getElementById('cond-amps-current')) document.getElementById('cond-amps-current').textContent = "____";
+                document.getElementById('sel-fatigue').style.color = "transparent";
+                document.getElementById('sel-composure').style.color = "transparent";
+                document.getElementById('note-fatigue').textContent = "";
+                document.getElementById('note-composure').textContent = "";
+            }
+            
+            if (mode === 'blank') {
+                const elementsToBlank = [
+                    'char-name', 'char-player', 'char-level', 'char-gift-xp', 'char-gift-ap',
+                    'char-xp-rem', 'char-xp-tot', 'char-ap-rem', 'char-ap-tot', 'char-pp',
+                    'attr-int', 'attr-con', 'attr-will', 'attr-per', 'attr-str', 'attr-dex', 'attr-hth',
+                    'dep-hp', 'dep-stun', 'dep-res', 'dep-rct',
+                    'cond-priority', 'cond-speed-base', 'cond-speed-half', 'cond-speed-sprint',
+                'inv-used', 'inv-max', 'cond-connection', 'cond-amps'
+                ];
+                elementsToBlank.forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) el.textContent = "____";
+                });
+                
+                document.querySelectorAll('.cost-tag').forEach(el => {
+                    if(el.id && el.id.startsWith('track-')) el.textContent = '';
+                });
+
+                const blankLines = '<li><span class="d-inline-block print-blank-line"></span> <span class="cost-tag">[____]</span></li>'.repeat(5);
+                document.getElementById('list-adv').innerHTML = blankLines;
+                document.getElementById('list-dis').innerHTML = blankLines;
+                document.getElementById('list-equipped').innerHTML = blankLines;
+                document.getElementById('list-inventory').innerHTML = blankLines;
+                document.getElementById('list-spells').innerHTML = blankLines;
+                
+                document.getElementById('quick-ref-gear').innerHTML = '<div class="mb-1"><div class="c-green">> ___________________</div><div class="mt-0-25">[DP/DR: ___] [RNG: ___] [ACC: ___] [DUR: ___]</div></div>'.repeat(4);
+            }
+            
+            setTimeout(() => {
+                window.print();
+                
+                if (wasEquipHidden) equipPanel.classList.add('hidden');
+                if (wasInvHidden) invPanel.classList.add('hidden');
+                if (wasSpellsHidden) spellsPanel.classList.add('hidden');
+                
+                const extraNotes = document.getElementById('print-extra-notes');
+                if (extraNotes) extraNotes.remove();
+                
+                document.getElementById('sel-fatigue').style.color = "";
+                document.getElementById('sel-composure').style.color = "";
+                
+                populateSheet(); 
+            }, 500);
+        }
+        
+        // Boot Initialization 
+        populateSheet();
+    });
+</script>
+</body>
+</html>

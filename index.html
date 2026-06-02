@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TERMINAL // O&E Character Sheet</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="theme-selector-container" style="position: absolute; top: 1rem; right: 1rem; z-index: 10000;">
+    <select id="sel-theme" class="terminal-input mini bg-transparent c-text-primary">
+        <option value="default" class="bg-bg">Cyan CRT</option>
+        <option value="amber" class="bg-bg">Amber CRT</option>
+        <option value="matrix" class="bg-bg">Green CRT</option>
+        <option value="notebook" class="bg-bg">WW2 Notebook</option>
+    </select>
+</div>
+
+<div id="startup-screen" class="overlay-screen">
+    <h1>> SYSTEM TERMINAL <span class="cursor-blink">_</span></h1>
+    <p class="header-sub mb-2">Select Operative Data Source</p>
+    <div>
+        <button id="btn-create" class="terminal-btn">File New Asset</button>
+        <button id="btn-load" class="terminal-btn">Load Existing</button>
+        <input type="file" id="file-upload" accept=".json" class="hidden">
+    </div>
+    <div id="dossier-log-container" class="hidden mt-3 w-100 max-w-400">
+        <p class="header-sub mb-1">> DOSSIER LOG // RECENT</p>
+        <div id="dossier-log-list" class="flex-col gap-0-5"></div>
+    </div>
+</div>
+
+<div id="builder-screen" class="overlay-screen hidden flex-start overflow-y-auto pt-3">
+    <h1>> OPERATIVE INITIALIZATION</h1>
+    <div class="header-rule w-100 max-w-600 mb-2"></div>
+    <form id="builder-form" class="w-100 max-w-600">
+        <div class="grid-2-col">
+            <div class="form-group">
+                <label>Operative Name</label>
+                <input type="text" id="in-name" class="terminal-input" placeholder="e.g. John" required>
+            </div>
+            <div class="form-group">
+                <label>Player ID</label>
+                <input type="text" id="in-player" class="terminal-input" placeholder="e.g. ST-09" required>
+            </div>
+            <div class="form-group">
+                <label>Class</label>
+                <select id="in-class" class="terminal-input" required></select>
+            </div>
+            <div class="form-group">
+                <label>Subclass</label>
+                <select id="in-subclass" class="terminal-input" required></select>
+            </div>
+            <div class="form-group">
+                <label>Starting Level</label>
+                <input type="number" id="in-level" class="terminal-input" value="1" min="1" required>
+            </div>
+            <div class="form-group">
+                <label>Starting Resources</label>
+                <div class="build-resources">
+                    XP: <span id="build-xp-tot">10</span> &nbsp;&nbsp;|&nbsp;&nbsp; AP: <span id="build-ap-tot">2</span>
+                </div>
+                <div id="build-warning" class="build-warning"></div>
+            </div>
+            <div class="form-group">
+                <label>INT (Intelligence)</label>
+                <div class="terminal-input stat-control flex-center w-100">
+                    <span id="build-int" class="mr-0-5">10</span>
+                    <span class="spinner-arrows">
+                        <span class="arrow up" data-target="build-int" data-action="up">▲</span>
+                        <span class="arrow down" data-target="build-int" data-action="down">▼</span>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>CON (Constitution)</label>
+                <div class="terminal-input stat-control flex-center w-100">
+                    <span id="build-con" class="mr-0-5">10</span>
+                    <span class="spinner-arrows">
+                        <span class="arrow up" data-target="build-con" data-action="up">▲</span>
+                        <span class="arrow down" data-target="build-con" data-action="down">▼</span>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>WILL (Willpower)</label>
+                <div class="terminal-input stat-control flex-center w-100">
+                    <span id="build-will" class="mr-0-5">10</span>
+                    <span class="spinner-arrows">
+                        <span class="arrow up" data-target="build-will" data-action="up">▲</span>
+                        <span class="arrow down" data-target="build-will" data-action="down">▼</span>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>PER (Perception)</label>
+                <div class="terminal-input stat-control flex-center w-100">
+                    <span id="build-per" class="mr-0-5">10</span>
+                    <span class="spinner-arrows">
+                        <span class="arrow up" data-target="build-per" data-action="up">▲</span>
+                        <span class="arrow down" data-target="build-per" data-action="down">▼</span>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>STR (Strength)</label>
+                <div class="terminal-input stat-control flex-center w-100">
+                    <span id="build-str" class="mr-0-5">10</span>
+                    <span class="spinner-arrows">
+                        <span class="arrow up" data-target="build-str" data-action="up">▲</span>
+                        <span class="arrow down" data-target="build-str" data-action="down">▼</span>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>DEX (Dexterity)</label>
+                <div class="terminal-input stat-control flex-center w-100">
+                    <span id="build-dex" class="mr-0-5">10</span>
+                    <span class="spinner-arrows">
+                        <span class="arrow up" data-target="build-dex" data-action="up">▲</span>
+                        <span class="arrow down" data-target="build-dex" data-action="down">▼</span>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>HTH (Health)</label>
+                <div class="terminal-input stat-control flex-center w-100">
+                    <span id="build-hth" class="mr-0-5">10</span>
+                    <span class="spinner-arrows">
+                        <span class="arrow up" data-target="build-hth" data-action="up">▲</span>
+                        <span class="arrow down" data-target="build-hth" data-action="down">▼</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="flex-center gap-1 mt-1 mb-2">
+            <button type="button" id="btn-builder-back" class="terminal-btn flex-1 btn-red">[ BACK ]</button>
+            <button type="submit" class="terminal-btn flex-2">COMPILE & INITIALIZE</button>
+        </div>
+    </form>
+</div>
+
+<div id="boot-screen" class="hidden">
+    <div id="boot-container"></div>
+</div>
+
+<script src="class_Anomalist.html"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        sessionStorage.removeItem('booted'); // clear any lingering session state
+        const startupScreen = document.getElementById('startup-screen');
+        const builderScreen = document.getElementById('builder-screen');
+        const bootScreen = document.getElementById('boot-screen');
+        const bootContainer = document.getElementById('boot-container');
+        
+        const inClass = document.getElementById('in-class');
+        const inSubclass = document.getElementById('in-subclass');
+
+        try {
+            if (window.OEShared && window.OEShared.initTheme) window.OEShared.initTheme();
+            
+            if (window.OEShared && window.OEShared.classTemplates) {
+                Object.keys(window.OEShared.classTemplates).forEach(cls => {
+                    inClass.add(new Option(cls, cls));
+                });
+                window.OEShared.updateSubclassOptions(inClass.value, inSubclass);
+            }
+        } catch (e) {
+            console.error("Core library initialization error:", e);
+        }
+
+        const updateSubclassOptions = window.OEShared.updateSubclassOptions;
+        const autoSaveDossier = () => window.OEShared.autoSaveDossier(characterData);
+
+        inClass.addEventListener('change', (e) => updateSubclassOptions(e.target.value, inSubclass));
+
+        let characterData = {};
+
+        // --- Dossier Log (Recent Files) --- //
+        const loadDossierLog = () => {
+            try {
+                const log = JSON.parse(localStorage.getItem('dossier_log') || '[]');
+                const logContainer = document.getElementById('dossier-log-container');
+                const logList = document.getElementById('dossier-log-list');
+                logList.innerHTML = '';
+                if (log.length > 0) {
+                    logContainer.classList.remove('hidden');
+                    log.forEach(dossier => {
+                        const btn = document.createElement('button');
+                        btn.className = 'terminal-btn mini w-100';
+                        btn.textContent = `LOAD: ${dossier.name || 'UNKNOWN'}`;
+                        btn.onclick = () => {
+                            characterData = dossier;
+                            startupScreen.classList.add('hidden');
+                            startBootSequence();
+                        };
+                        logList.appendChild(btn);
+                    });
+                }
+            } catch (e) {}
+        };
+        loadDossierLog();
+
+        // --- UI Flow Logic --- //
+        document.getElementById('btn-create').addEventListener('click', () => {
+            startupScreen.classList.add('hidden');
+            builderScreen.classList.remove('hidden');
+        });
+
+        document.getElementById('btn-builder-back').addEventListener('click', () => {
+            builderScreen.classList.add('hidden');
+            startupScreen.classList.remove('hidden');
+        });
+
+        document.getElementById('btn-load').addEventListener('click', () => {
+            document.getElementById('file-upload').click();
+        });
+
+        document.getElementById('file-upload').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    characterData = JSON.parse(event.target.result);
+                    startupScreen.classList.add('hidden');
+                    startBootSequence();
+                } catch (err) {
+                    alert("ERROR: Corrupted data sequence. Invalid JSON.");
+                }
+            };
+            reader.readAsText(file);
+        });
+
+
+        // Prevent Enter key from implicitly submitting, instead move to next field
+        document.getElementById('builder-form').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target.tagName !== 'BUTTON') {
+                e.preventDefault();
+                const inputs = Array.from(e.currentTarget.querySelectorAll('input'));
+                const index = inputs.indexOf(e.target);
+                if (index > -1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            }
+        });
+
+        // --- Builder Tally Updates & Arrow Logic --- //
+        const buildLevel = document.getElementById('in-level');
+        const buildXpTot = document.getElementById('build-xp-tot');
+        const buildApTot = document.getElementById('build-ap-tot');
+
+        const updateBuilderTally = (checkOnly = false) => {
+            const lvl = parseInt(buildLevel.value) || 1;
+            const totalXp = lvl * 10;
+            const totalAp = lvl * 2;
+
+            const int = parseInt(document.getElementById('build-int').textContent) || 10;
+            const con = parseInt(document.getElementById('build-con').textContent) || 10;
+            const will = parseInt(document.getElementById('build-will').textContent) || 10;
+            const per = parseInt(document.getElementById('build-per').textContent) || 10;
+            
+            const str = parseInt(document.getElementById('build-str').textContent) || 10;
+            const dex = parseInt(document.getElementById('build-dex').textContent) || 10;
+            const hth = parseInt(document.getElementById('build-hth').textContent) || 10;
+
+            let spent_xp_attrs = 0;
+            
+            let m_int = int - 10, m_con = con - 10, m_will = will - 10, m_per = per - 10;
+            let m_pkg = 0;
+            if (m_int > 0 && m_con > 0 && m_will > 0 && m_per > 0) m_pkg = Math.min(m_int, m_con, m_will, m_per);
+            else if (m_int < 0 && m_con < 0 && m_will < 0 && m_per < 0) m_pkg = Math.max(m_int, m_con, m_will, m_per);
+            
+            spent_xp_attrs += m_pkg * 35;
+            spent_xp_attrs += (m_int - m_pkg) * 15;
+            spent_xp_attrs += (m_con - m_pkg) * 10;
+            spent_xp_attrs += (m_will - m_pkg) * 10;
+            spent_xp_attrs += (m_per - m_pkg) * 10;
+            
+            let p_str = str - 10, p_dex = dex - 10, p_hth = hth - 10;
+            let p_pkg = 0;
+            if (p_str > 0 && p_dex > 0 && p_hth > 0) p_pkg = Math.min(p_str, p_dex, p_hth);
+            else if (p_str < 0 && p_dex < 0 && p_hth < 0) p_pkg = Math.max(p_str, p_dex, p_hth);
+            
+            spent_xp_attrs += p_pkg * 36;
+            spent_xp_attrs += (p_str - p_pkg) * 15;
+            spent_xp_attrs += (p_dex - p_pkg) * 15;
+            spent_xp_attrs += (p_hth - p_pkg) * 10;
+
+            const remXp = totalXp - spent_xp_attrs;
+            if (checkOnly && remXp < 0) return false;
+
+            buildXpTot.textContent = remXp;
+            buildApTot.textContent = totalAp;
+            return true;
+        };
+
+        buildLevel.addEventListener('input', () => updateBuilderTally(false));
+
+        document.getElementById('builder-form').addEventListener('click', (e) => {
+            if (e.target.classList.contains('arrow')) {
+                const targetId = e.target.getAttribute('data-target');
+                const action = e.target.getAttribute('data-action');
+                if (targetId) {
+                    const el = document.getElementById(targetId);
+                    const warningEl = document.getElementById('build-warning');
+                    let val = parseInt(el.textContent) || 10;
+                    let newVal = val;
+
+                    const showWarning = (msg) => {
+                        el.style.color = 'var(--c-red)';
+                        el.style.textShadow = '0 0 5px rgba(var(--c-red-rgb), .6)';
+                        warningEl.textContent = msg;
+                        warningEl.style.display = 'block';
+                        
+                        if (el.warningTimeout) clearTimeout(el.warningTimeout);
+                        el.warningTimeout = setTimeout(() => {
+                            el.style.color = '';
+                            el.style.textShadow = '';
+                            warningEl.style.display = 'none';
+                        }, 1500);
+                    };
+
+                    if (action === 'up') {
+                        if (val < 13) newVal++;
+                        else {
+                            showWarning("SYSTEM ALERT: Maximum starting value is 13.");
+                            return;
+                        }
+                    } else if (action === 'down') {
+                        if (val > 7) newVal--;
+                        else {
+                            showWarning("SYSTEM ALERT: Minimum starting value is 7.");
+                            return;
+                        }
+                    }
+                    
+                    if (newVal !== val) {
+                        el.textContent = newVal;
+                        if (!updateBuilderTally(true)) {
+                            el.textContent = val; // Revert visually if there is not enough XP
+                            showWarning("SYSTEM ALERT: Insufficient Starting XP.");
+                        } else {
+                            warningEl.style.display = 'none';
+                        }
+                    }
+                }
+            }
+        });
+
+        document.getElementById('builder-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const initWill = parseInt(document.getElementById('build-will').textContent) || 10;
+            const initConnection = Math.floor(initWill / 4);
+            const initAmps = initConnection * initWill;
+
+            characterData = {
+                name: document.getElementById('in-name').value,
+                player: document.getElementById('in-player').value,
+                class: document.getElementById('in-class').value,
+                subclass: document.getElementById('in-subclass').value,
+                connection: initConnection,
+                amps: initAmps,
+                current_amps: initAmps,
+                level: document.getElementById('in-level').value,
+                gift_xp: "0",
+                gift_ap: "0",
+                int: document.getElementById('build-int').textContent,
+                con: document.getElementById('build-con').textContent,
+                will: document.getElementById('build-will').textContent,
+                per: document.getElementById('build-per').textContent,
+                str: document.getElementById('build-str').textContent,
+                dex: document.getElementById('build-dex').textContent,
+                hth: document.getElementById('build-hth').textContent,
+                adv: [],
+                dis: [],
+                skills: [],
+                spells: [],
+                inventory: [],
+                equipped: [],
+                fatigue: "Winded",
+                composure: "Stable"
+            };
+            builderScreen.classList.add('hidden');
+            startBootSequence();
+        });
+
+        // --- Animation Logic --- //
+        function startBootSequence() {
+            autoSaveDossier();
+            document.getElementById('theme-selector-container').classList.add('hidden');
+            sessionStorage.setItem('booted', 'true');
+            bootScreen.classList.remove('hidden');
+            bootContainer.innerHTML = ''; 
+            
+            const lines = [
+                "INITIATING BIOS v2.4.1...",
+                "MEMORY CHECK: 64000K OK",
+                "LOADING KERNEL MODULES........ DONE",
+                "ESTABLISHING SECURE UPLINK TO EXCLUSION ZONE...",
+                "UPLINK ESTABLISHED. PING: 14ms",
+                `AUTHENTICATING PLAYER ID: [${characterData.player || 'UNKNOWN'}]...`,
+                "ACCESS GRANTED.",
+                `QUERYING REGISTRY FOR OPERATIVE: [${characterData.name ? characterData.name.toUpperCase() : 'SUBJECT'}]...`,
+                "MATCH FOUND. CROSS-REFERENCING ARCHIVES...",
+                `> CLASS: ${characterData.class ? characterData.class.toUpperCase() : 'UNKNOWN'}`,
+                `> SUBCLASS: ${characterData.subclass ? characterData.subclass.toUpperCase() : 'UNKNOWN'}`,
+                `> LEVEL: ${characterData.level || 1}`,
+                "DECRYPTING BIO-METRICS AND LOADING BASE CHARACTERISTICS...",
+                "RENDERING INTERFACE..."
+            ];
+        
+            const isNotebook = document.documentElement.getAttribute('data-theme') === 'notebook';
+
+            if (isNotebook) {
+                lines.forEach(line => {
+                    const newLog = document.createElement('div');
+                    newLog.className = 'boot-line';
+                    newLog.textContent = '> ' + line;
+                    bootContainer.appendChild(newLog);
+                });
+
+                let currentLine = 0;
+                const bootLines = bootContainer.querySelectorAll('.boot-line');
+                
+                const redactLine = () => {
+                    if (currentLine < bootLines.length) {
+                        bootLines[currentLine].innerHTML = '> <span class="redacted">' + lines[currentLine] + '</span>';
+                        currentLine++;
+                        setTimeout(redactLine, Math.random() * 200 + 100);
+                    } else {
+                        setTimeout(() => {
+                            bootScreen.classList.add('fade-out-boot');
+                            setTimeout(() => {
+                                window.location.href = 'live_metrics.html';
+                            }, 500);
+                        }, 800);
+                    }
+                };
+                
+                setTimeout(redactLine, 400);
+            } else {
+                let currentLine = 0;
+                let cursorLine = document.createElement('div');
+                cursorLine.className = 'boot-line';
+                cursorLine.innerHTML = '> <span class="boot-cursor-block"></span>';
+                bootContainer.appendChild(cursorLine);
+
+                const printLine = () => {
+                    if (currentLine < lines.length) {
+                        bootContainer.removeChild(cursorLine);
+                        
+                        const newLog = document.createElement('div');
+                        newLog.className = 'boot-line';
+                        newLog.textContent = '> ' + lines[currentLine];
+                        bootContainer.appendChild(newLog);
+                        bootContainer.appendChild(cursorLine);
+                        
+                        currentLine++;
+                        setTimeout(printLine, Math.random() * 200 + 100);
+                    } else {
+                        setTimeout(() => {
+                            bootScreen.classList.add('fade-out-boot');
+                            setTimeout(() => {
+                                window.location.href = 'live_metrics.html';
+                            }, 500);
+                        }, 800);
+                    }
+                };
+                
+                setTimeout(printLine, 400); // Initial pause before first print
+            }
+        }
+    });
+</script>
+</body>
+</html>
