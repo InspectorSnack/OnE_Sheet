@@ -157,6 +157,9 @@
         const inClass = document.getElementById('in-class');
         const inSubclass = document.getElementById('in-subclass');
 
+        let updateSubclassOptions = () => {};
+        let autoSaveDossier = () => {};
+
         try {
             if (window.OEShared && window.OEShared.initTheme) window.OEShared.initTheme();
             
@@ -165,13 +168,12 @@
                     inClass.add(new Option(cls, cls));
                 });
                 window.OEShared.updateSubclassOptions(inClass.value, inSubclass);
+                updateSubclassOptions = window.OEShared.updateSubclassOptions;
+                autoSaveDossier = () => window.OEShared.autoSaveDossier(characterData);
             }
         } catch (e) {
             console.error("Core library initialization error:", e);
         }
-
-        const updateSubclassOptions = window.OEShared.updateSubclassOptions;
-        const autoSaveDossier = () => window.OEShared.autoSaveDossier(characterData);
 
         inClass.addEventListener('change', (e) => updateSubclassOptions(e.target.value, inSubclass));
 
@@ -256,37 +258,17 @@
             const totalXp = lvl * 10;
             const totalAp = lvl * 2;
 
-            const int = parseInt(document.getElementById('build-int').textContent) || 10;
-            const con = parseInt(document.getElementById('build-con').textContent) || 10;
-            const will = parseInt(document.getElementById('build-will').textContent) || 10;
-            const per = parseInt(document.getElementById('build-per').textContent) || 10;
-            
-            const str = parseInt(document.getElementById('build-str').textContent) || 10;
-            const dex = parseInt(document.getElementById('build-dex').textContent) || 10;
-            const hth = parseInt(document.getElementById('build-hth').textContent) || 10;
+            const stats = {
+                int: parseInt(document.getElementById('build-int').textContent) || 10,
+                con: parseInt(document.getElementById('build-con').textContent) || 10,
+                will: parseInt(document.getElementById('build-will').textContent) || 10,
+                per: parseInt(document.getElementById('build-per').textContent) || 10,
+                str: parseInt(document.getElementById('build-str').textContent) || 10,
+                dex: parseInt(document.getElementById('build-dex').textContent) || 10,
+                hth: parseInt(document.getElementById('build-hth').textContent) || 10
+            };
 
-            let spent_xp_attrs = 0;
-            
-            let m_int = int - 10, m_con = con - 10, m_will = will - 10, m_per = per - 10;
-            let m_pkg = 0;
-            if (m_int > 0 && m_con > 0 && m_will > 0 && m_per > 0) m_pkg = Math.min(m_int, m_con, m_will, m_per);
-            else if (m_int < 0 && m_con < 0 && m_will < 0 && m_per < 0) m_pkg = Math.max(m_int, m_con, m_will, m_per);
-            
-            spent_xp_attrs += m_pkg * 35;
-            spent_xp_attrs += (m_int - m_pkg) * 15;
-            spent_xp_attrs += (m_con - m_pkg) * 10;
-            spent_xp_attrs += (m_will - m_pkg) * 10;
-            spent_xp_attrs += (m_per - m_pkg) * 10;
-            
-            let p_str = str - 10, p_dex = dex - 10, p_hth = hth - 10;
-            let p_pkg = 0;
-            if (p_str > 0 && p_dex > 0 && p_hth > 0) p_pkg = Math.min(p_str, p_dex, p_hth);
-            else if (p_str < 0 && p_dex < 0 && p_hth < 0) p_pkg = Math.max(p_str, p_dex, p_hth);
-            
-            spent_xp_attrs += p_pkg * 36;
-            spent_xp_attrs += (p_str - p_pkg) * 15;
-            spent_xp_attrs += (p_dex - p_pkg) * 15;
-            spent_xp_attrs += (p_hth - p_pkg) * 10;
+            const spent_xp_attrs = window.OEShared && window.OEShared.calculateXP ? window.OEShared.calculateXP(stats) : 0;
 
             const remXp = totalXp - spent_xp_attrs;
             if (checkOnly && remXp < 0) return false;

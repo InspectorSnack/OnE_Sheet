@@ -52,5 +52,17 @@ window.OEShared = {
             if (log.length > 5) log.pop(); // Keep top 5 latest
             localStorage.setItem('dossier_log', JSON.stringify(log));
         } catch (e) {}
+    },
+    calculateXP: (stats) => {
+        let spent = 0;
+        const m = [stats.int - 10, stats.con - 10, stats.will - 10, stats.per - 10];
+        const m_pkg = m.every(v => v > 0) ? Math.min(...m) : (m.every(v => v < 0) ? Math.max(...m) : 0);
+        spent += m_pkg * 35 + (m[0] - m_pkg) * 15 + (m[1] - m_pkg) * 10 + (m[2] - m_pkg) * 10 + (m[3] - m_pkg) * 10;
+
+        const p = [stats.str - 10, stats.dex - 10, stats.hth - 10];
+        const p_pkg = p.every(v => v > 0) ? Math.min(...p) : (p.every(v => v < 0) ? Math.max(...p) : 0);
+        spent += p_pkg * 36 + (p[0] - p_pkg) * 15 + (p[1] - p_pkg) * 15 + (p[2] - p_pkg) * 10;
+
+        return spent;
     }
 };

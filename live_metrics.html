@@ -28,6 +28,85 @@
     </div>
 </div>
 
+<div id="equip-modal" class="overlay-screen hidden flex-start overflow-y-auto pt-3">
+    <h1>> ADD EQUIPMENT <span class="cursor-blink">_</span></h1>
+    <div class="header-rule w-100 max-w-600 mb-2"></div>
+    
+    <div id="equip-step-1" class="w-100 max-w-400">
+        <p class="mb-1 text-center">Select Equipment Type</p>
+        <div class="flex-col gap-1">
+            <button class="terminal-btn btn-equip-type" data-type="Weapon">Weapon</button>
+            <button class="terminal-btn btn-equip-type" data-type="Armor">Armor</button>
+            <button class="terminal-btn btn-equip-type" data-type="Special">Special Equipment</button>
+            <button class="terminal-btn btn-equip-type" data-type="Bag">Bag / Storage</button>
+            <button id="btn-equip-cancel" class="terminal-btn btn-red mt-1">Cancel</button>
+        </div>
+    </div>
+
+    <div id="equip-step-2" class="w-100 max-w-600 hidden text-left">
+        <div id="equip-dynamic-form" class="flex-col gap-0-5">
+            <!-- Dynamic fields go here -->
+        </div>
+        
+        <div class="form-group mt-1">
+            <label>Tags</label>
+            <ul id="equip-modal-tags" class="bullet-list mb-0-5"></ul>
+            <div class="flex-start gap-0-5">
+                <input type="text" id="equip-modal-new-tag" class="terminal-input mini flex-2" placeholder="e.g. Piercing, Heavy">
+                <button type="button" id="btn-add-equip-tag" class="terminal-btn mini flex-1">ADD TAG</button>
+            </div>
+        </div>
+
+        <div class="flex-center gap-1 mt-1 mb-2">
+            <button type="button" id="btn-equip-back" class="terminal-btn flex-1 btn-red">[ BACK ]</button>
+            <button type="button" id="btn-confirm-equip" class="terminal-btn flex-2">ADD ITEM</button>
+        </div>
+    </div>
+</div>
+
+<div id="inv-type-modal" class="overlay-screen hidden flex-start overflow-y-auto pt-3">
+    <h1>> ADD TO INVENTORY <span class="cursor-blink">_</span></h1>
+    <div class="header-rule w-100 max-w-400 mb-2"></div>
+    <div class="w-100 max-w-400">
+        <p class="mb-1 text-center">Is this Equipment or a Standard Item?</p>
+        <div class="flex-col gap-1">
+            <button class="terminal-btn btn-inv-type" data-type="equip">Equipment</button>
+            <button class="terminal-btn btn-inv-type" data-type="item">Standard Item</button>
+            <button id="btn-inv-type-cancel" class="terminal-btn btn-red mt-1">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="inv-modal" class="overlay-screen hidden flex-start overflow-y-auto pt-3">
+    <h1>> ADD INVENTORY ITEM <span class="cursor-blink">_</span></h1>
+    <div class="header-rule w-100 max-w-600 mb-2"></div>
+    
+    <div class="w-100 max-w-600 text-left">
+        <div class="flex-col gap-0-5">
+            <div class="form-group"><label>Item Name</label><input type="text" id="inv-modal-name" class="terminal-input mini"></div>
+            <div class="grid-2-col gap-0-5">
+                <div class="form-group">
+                    <label>Size</label>
+                    <select id="inv-modal-size" class="terminal-input mini bg-transparent c-text-primary">
+                        <option value="0.1" class="bg-bg">Tiny (1/10)</option>
+                        <option value="0.5" class="bg-bg">Small (1/2)</option>
+                        <option value="1" class="bg-bg" selected>Medium (1)</option>
+                        <option value="2" class="bg-bg">Large (2)</option>
+                        <option value="3" class="bg-bg">Oversized (3+)</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Quantity</label><input type="number" id="inv-modal-qty" class="terminal-input mini" value="1" min="1"></div>
+            </div>
+            <div class="form-group"><label>Description</label><input type="text" id="inv-modal-desc" class="terminal-input mini"></div>
+        </div>
+
+        <div class="flex-center gap-1 mt-1 mb-2">
+            <button type="button" id="btn-inv-cancel" class="terminal-btn flex-1 btn-red">[ CANCEL ]</button>
+            <button type="button" id="btn-confirm-inv" class="terminal-btn flex-2">ADD ITEM</button>
+        </div>
+    </div>
+</div>
+
 <div id="main-sheet" class="container">
     <header>
         <h1>> Live Metrics <span class="cursor-blink">_</span></h1>
@@ -171,71 +250,8 @@
     <div id="reference-panel" class="panel hidden mt-1-5"></div>
 
     <div id="equipped-panel" class="panel hidden mt-1-5">
-        <div class="panel-legend"><span class="legend-text">Equipped Gear</span> <span class="pointer c-text-dim font-size-0-8 ml-0-5 toggle-form" data-target="form-equip">[HIDE NEW]</span></div>
+        <div class="panel-legend"><span class="legend-text">Equipped Gear</span> <span class="pointer c-text-dim font-size-0-8 ml-0-5" id="btn-open-equip-modal">[ADD NEW]</span></div>
         <ul class="bullet-list" id="list-equipped"></ul>
-        <div id="form-equip" class="add-entry-form form-wrap flex-col align-start gap-0-5">
-            <div class="flex-start w-100 gap-0-5 flex-wrap">
-                <div class="form-col flex-2 min-w-120">
-                    <label class="form-col-label">ITEM NAME</label>
-                    <input type="text" id="new-equip-name" class="terminal-input mini" placeholder="e.g. Kevlar Vest">
-                </div>
-                <div class="form-col flex-1 min-w-100">
-                    <label class="form-col-label">TYPE</label>
-                    <select id="new-equip-type" class="terminal-input mini bg-transparent c-text-primary">
-                        <option value="Weapon" class="bg-bg">Weapon</option>
-                        <option value="Armor" class="bg-bg">Armor</option>
-                        <option value="Bag" class="bg-bg">Bag</option>
-                        <option value="Clothing" class="bg-bg">Clothing</option>
-                        <option value="Accessory" class="bg-bg">Accessory</option>
-                    </select>
-                </div>
-                <div class="form-col flex-1 min-w-100">
-                    <label class="form-col-label">LOCATION</label>
-                    <select id="new-equip-loc" class="terminal-input mini bg-transparent c-text-primary">
-                        <option value="Head" class="bg-bg">Head</option>
-                        <option value="Torso" class="bg-bg">Torso</option>
-                        <option value="Back" class="bg-bg">Back</option>
-                        <option value="Arms" class="bg-bg">Arms</option>
-                        <option value="Hands" class="bg-bg">Hands</option>
-                        <option value="Legs" class="bg-bg">Legs</option>
-                        <option value="Feet" class="bg-bg">Feet</option>
-                        <option value="Belt" class="bg-bg">Belt</option>
-                    </select>
-                </div>
-                <div class="form-col flex-1 min-w-80">
-                    <label class="form-col-label">+ MAX SLOTS</label>
-                    <input type="number" id="new-equip-bonus" class="terminal-input mini" placeholder="e.g. 5">
-                </div>
-            </div>
-            <!-- NEW STATS ROW -->
-            <div class="flex-start w-100 gap-0-5 flex-wrap mt-0-5">
-                <div class="form-col flex-1 min-w-80">
-                    <label class="form-col-label">DP / DR</label>
-                    <input type="text" id="new-equip-dp" class="terminal-input mini" placeholder="e.g. 2d6 or 4">
-                </div>
-                <div class="form-col flex-1 min-w-80">
-                    <label class="form-col-label">PARRY / BLK</label>
-                    <input type="text" id="new-equip-parry" class="terminal-input mini" placeholder="e.g. +1 / +2">
-                </div>
-                <div class="form-col flex-1 min-w-80">
-                    <label class="form-col-label">RANGE</label>
-                    <input type="text" id="new-equip-range" class="terminal-input mini" placeholder="e.g. 10m">
-                </div>
-                <div class="form-col flex-1 min-w-80">
-                    <label class="form-col-label">ACCURACY</label>
-                    <input type="text" id="new-equip-acc" class="terminal-input mini" placeholder="e.g. +1">
-                </div>
-                <div class="form-col flex-1 min-w-80">
-                    <label class="form-col-label">DURABILITY</label>
-                    <input type="text" id="new-equip-dur" class="terminal-input mini" placeholder="e.g. 10/10">
-                </div>
-                <div class="form-col flex-2 min-w-120">
-                    <label class="form-col-label">EFFECTS</label>
-                    <input type="text" id="new-equip-effects" class="terminal-input mini" placeholder="e.g. Piercing">
-                </div>
-            </div>
-            <button id="btn-add-equip" class="terminal-btn mini mb-0-25 w-100">ADD TO LOADOUT</button>
-        </div>
     </div>
 
     <div id="spells-panel" class="panel hidden mt-1-5">
@@ -247,45 +263,32 @@
                 <input type="text" id="new-spell-name" class="terminal-input mini" placeholder="e.g. Fireball">
             </div>
             <div class="form-col flex-1 min-w-80">
-                <label class="form-col-label">COST/TIER</label>
-                <input type="text" id="new-spell-cost" class="terminal-input mini" placeholder="e.g. 2 FP">
+                <label class="form-col-label">EFFECT</label>
+                <input type="text" id="new-spell-effect" class="terminal-input mini" placeholder="e.g. 2d6 dmg">
             </div>
-            <div class="form-col flex-3 min-w-150">
+            <div class="form-col flex-0-5 min-w-60">
+                <label class="form-col-label">AMP COST</label>
+                <input type="number" id="new-spell-amp" class="terminal-input mini" placeholder="0">
+            </div>
+            <div class="form-col flex-0-5 min-w-60">
+                <label class="form-col-label">AP COST</label>
+                <input type="number" id="new-spell-ap" class="terminal-input mini" placeholder="0">
+            </div>
+            <div class="form-col flex-2 min-w-120">
                 <label class="form-col-label">NOTES</label>
-                <input type="text" id="new-spell-note" class="terminal-input mini" placeholder="e.g. Deals 2d6 dmg">
+                <input type="text" id="new-spell-note" class="terminal-input mini" placeholder="Additional details...">
             </div>
-            <button id="btn-add-spell" class="terminal-btn mini mb-0-25">ADD</button>
+            <button id="btn-add-spell" class="terminal-btn mini mb-0-25 w-100">ADD SPELL</button>
         </div>
     </div>
 
     <div id="inventory-panel" class="panel hidden mt-1-5">
-        <div class="panel-legend"><span class="legend-text">Inventory & Storage</span> <span class="pointer c-text-dim font-size-0-8 ml-0-5 toggle-form" data-target="form-inv">[HIDE NEW]</span></div>
+        <div class="panel-legend"><span class="legend-text">Inventory & Storage</span> <span class="pointer c-text-dim font-size-0-8 ml-0-5" id="btn-open-inv-modal">[ADD NEW]</span></div>
         <div class="readout-line mb-1">
             <span class="line-key">CAPACITY (SLOTS)</span><span class="line-dots">..........</span>
             <span class="line-value"><span id="inv-used" class="c-amber">0</span> <span class="c-amber">/</span> <span id="inv-max" class="c-blue">0</span></span>
         </div>
         <ul class="bullet-list" id="list-inventory"></ul>
-        <div id="form-inv" class="add-entry-form form-wrap">
-            <div class="form-col flex-2 min-w-120">
-                <label class="form-col-label">ITEM NAME</label>
-                <input type="text" id="new-inv-name" class="terminal-input mini" placeholder="e.g. Medkit">
-            </div>
-            <div class="form-col flex-1 min-w-100">
-                <label class="form-col-label">SIZE</label>
-                <select id="new-inv-size" class="terminal-input mini bg-transparent c-text-primary">
-                    <option value="0.1" class="bg-bg">Tiny (1/10)</option>
-                    <option value="0.5" class="bg-bg">Small (1/2)</option>
-                    <option value="1" class="bg-bg" selected>Medium (1)</option>
-                    <option value="2" class="bg-bg">Large (2)</option>
-                    <option value="3" class="bg-bg">Oversized (3+)</option>
-                </select>
-            </div>
-            <div class="form-col flex-0-5 min-w-60">
-                <label class="form-col-label">QTY</label>
-                <input type="number" id="new-inv-qty" class="terminal-input mini" placeholder="1" value="1" min="1">
-            </div>
-            <button id="btn-add-inv" class="terminal-btn mini mb-0-25">ADD</button>
-        </div>
         <div class="item-note d-block mt-1">
             > BASE SLOTS = STR + 2. Your 2 hands count towards this total and can hold 1 slot each.<br>
             > Items of the exact same type implicitly share slots based on size limitations.
@@ -558,50 +561,372 @@
             });
         });
 
-        document.getElementById('list-equipped').addEventListener('click', (e) => handleListDelete(e, 'del-equip', 'equipped'));
-
-        document.getElementById('btn-add-equip').addEventListener('click', () => {
-            const name = document.getElementById('new-equip-name').value.trim();
-            const type = document.getElementById('new-equip-type').value;
-            const loc = document.getElementById('new-equip-loc').value;
-            const bonus = parseFloat(document.getElementById('new-equip-bonus').value) || 0;
-            
-            const dp_dr = document.getElementById('new-equip-dp').value.trim();
-            const parry = document.getElementById('new-equip-parry').value.trim();
-            const range = document.getElementById('new-equip-range').value.trim();
-            const acc = document.getElementById('new-equip-acc').value.trim();
-            const dur = document.getElementById('new-equip-dur').value.trim();
-            const effects = document.getElementById('new-equip-effects').value.trim();
-            
-            if (name) {
-                if (!characterData.equipped) characterData.equipped = [];
-                characterData.equipped.push({ name, type, loc, bonus, dp_dr, parry, range, acc, dur, effects });
+        document.getElementById('list-equipped').addEventListener('click', (e) => {
+            if (e.target.classList.contains('del-equip')) {
+                e.preventDefault();
+                const idx = e.target.getAttribute('data-idx');
+                characterData.equipped.splice(idx, 1);
                 populateSheet();
-                document.getElementById('new-equip-name').value = '';
-                document.getElementById('new-equip-bonus').value = '';
-                document.getElementById('new-equip-dp').value = '';
-                document.getElementById('new-equip-parry').value = '';
-                document.getElementById('new-equip-range').value = '';
-                document.getElementById('new-equip-acc').value = '';
-                document.getElementById('new-equip-dur').value = '';
-                document.getElementById('new-equip-effects').value = '';
+                autoSaveDossier();
+            } else if (e.target.classList.contains('unequip-item')) {
+                e.preventDefault();
+                const idx = e.target.getAttribute('data-idx');
+                const item = characterData.equipped.splice(idx, 1)[0];
+                if(!characterData.inventory) characterData.inventory = [];
+                characterData.inventory.push(item);
+                populateSheet();
                 autoSaveDossier();
             }
         });
 
-        document.getElementById('list-inventory').addEventListener('click', (e) => handleListDelete(e, 'del-inv', 'inventory'));
+        let currentEquipType = '';
+        let currentEquipTags = [];
+        let equipDestination = 'equipped';
+        let currentEditIndex = -1;
+        let currentEditDest = '';
 
-        document.getElementById('btn-add-inv').addEventListener('click', () => {
-            const name = document.getElementById('new-inv-name').value.trim();
-            const size = parseFloat(document.getElementById('new-inv-size').value);
-            const qty = parseInt(document.getElementById('new-inv-qty').value) || 1;
+        document.getElementById('btn-open-equip-modal').addEventListener('click', () => {
+            equipDestination = 'equipped';
+            currentEditIndex = -1;
+            currentEditDest = '';
+            document.getElementById('equip-step-1').classList.remove('hidden');
+            document.getElementById('equip-step-2').classList.add('hidden');
+            document.getElementById('equip-modal').classList.remove('hidden');
+        });
+
+        document.querySelectorAll('.btn-equip-type').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                currentEquipType = e.target.getAttribute('data-type');
+                currentEquipTags = [];
+                renderEquipForm(currentEquipType);
+                document.getElementById('equip-step-1').classList.add('hidden');
+                document.getElementById('equip-step-2').classList.remove('hidden');
+                renderEquipTags();
+            });
+        });
+
+        document.getElementById('btn-equip-cancel').addEventListener('click', () => {
+            currentEditIndex = -1;
+            document.getElementById('equip-modal').classList.add('hidden');
+        });
+
+        document.getElementById('btn-equip-back').addEventListener('click', () => {
+            document.getElementById('equip-step-2').classList.add('hidden');
+            document.getElementById('equip-step-1').classList.remove('hidden');
+        });
+
+        document.getElementById('btn-add-equip-tag').addEventListener('click', () => {
+            const input = document.getElementById('equip-modal-new-tag');
+            const tag = input.value.trim();
+            if(tag) {
+                currentEquipTags.push(tag);
+                input.value = '';
+                renderEquipTags();
+            }
+        });
+
+        document.getElementById('equip-modal-new-tag').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('btn-add-equip-tag').click();
+            }
+        });
+
+        function renderEquipTags() {
+            const ul = document.getElementById('equip-modal-tags');
+            ul.innerHTML = '';
+            currentEquipTags.forEach((tag, idx) => {
+                ul.innerHTML += `<li>${tag} <span class="c-red pointer ml-0-5 del-equip-tag" data-idx="${idx}">[X]</span></li>`;
+            });
+        }
+        
+        document.getElementById('equip-modal-tags').addEventListener('click', (e) => {
+            if (e.target.classList.contains('del-equip-tag')) {
+                const idx = e.target.getAttribute('data-idx');
+                currentEquipTags.splice(idx, 1);
+                renderEquipTags();
+            }
+        });
+
+        function renderEquipForm(type) {
+            const container = document.getElementById('equip-dynamic-form');
+            let html = `
+                <div class="grid-2-col gap-0-5">
+                    <div class="form-group"><label>Name</label><input type="text" id="eq-name" class="terminal-input mini"></div>
+                    <div class="form-group">
+                        <label>Size (For Inventory)</label>
+                        <select id="eq-size" class="terminal-input mini bg-transparent c-text-primary">
+                            <option value="0.1" class="bg-bg">Tiny (1/10)</option>
+                            <option value="0.5" class="bg-bg">Small (1/2)</option>
+                            <option value="1" class="bg-bg" selected>Medium (1)</option>
+                            <option value="2" class="bg-bg">Large (2)</option>
+                            <option value="3" class="bg-bg">Oversized (3+)</option>
+                        </select>
+                    </div>
+                </div>`;
+            
+            if (type === 'Weapon') {
+                html += `
+                    <div class="grid-2-col gap-0-5">
+                        <div class="form-group">
+                            <label>Hands Required</label>
+                            <select id="eq-hands" class="terminal-input mini bg-transparent c-text-primary">
+                                <option value="1" class="bg-bg">1 Hand</option>
+                                <option value="2" class="bg-bg">2 Hands</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>DP (Damage Potential)</label><input type="number" id="eq-dp" class="terminal-input mini"></div>
+                        <div class="form-group"><label>Stun</label><input type="number" id="eq-stun" class="terminal-input mini"></div>
+                        <div class="form-group"><label>Parry</label><input type="number" id="eq-parry" class="terminal-input mini"></div>
+                        <div class="form-group"><label>Block</label><input type="number" id="eq-block" class="terminal-input mini"></div>
+                        <div class="form-group"><label>Accuracy (ACC)</label><input type="number" id="eq-acc" class="terminal-input mini"></div>
+                        <div class="form-group"><label>Range</label><input type="number" id="eq-range" class="terminal-input mini"></div>
+                        <div class="form-group"><label>Durability (DUR)</label><input type="number" id="eq-dur" class="terminal-input mini"></div>
+                        <div class="form-group"><label>Item HP</label><input type="number" id="eq-hp" class="terminal-input mini"></div>
+                    </div>
+                    <div class="form-group"><label>Description</label><input type="text" id="eq-desc" class="terminal-input mini"></div>
+                `;
+            } else if (type === 'Armor') {
+                html += `
+                    <div class="grid-2-col gap-0-5">
+                        <div class="form-group"><label>DR (Damage Resistance)</label><input type="number" id="eq-dr" class="terminal-input mini"></div>
+                        <div class="form-group"><label>Durability (DUR)</label><input type="number" id="eq-dur" class="terminal-input mini"></div>
+                        <div class="form-group"><label>Item HP</label><input type="number" id="eq-hp" class="terminal-input mini"></div>
+                        <div class="form-group"><label>Location</label><input type="text" id="eq-loc" class="terminal-input mini"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Material</label>
+                        <select id="eq-material" class="terminal-input mini bg-transparent c-text-primary">
+                            <option value="" class="bg-bg">None</option>
+                            <option value="Padded" class="bg-bg">Padded</option>
+                            <option value="Composite" class="bg-bg">Composite</option>
+                            <option value="Ceramic" class="bg-bg">Ceramic</option>
+                            <option value="Metal Plate" class="bg-bg">Metal Plate</option>
+                            <option value="Metal Mesh" class="bg-bg">Metal Mesh</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Description</label><input type="text" id="eq-desc" class="terminal-input mini"></div>
+                `;
+            } else if (type === 'Special') {
+                html += `
+                    <div class="form-group"><label>Location</label><input type="text" id="eq-loc" class="terminal-input mini"></div>
+                    <div class="form-group"><label>Description</label><input type="text" id="eq-desc" class="terminal-input mini"></div>
+                `;
+            } else if (type === 'Bag') {
+                html += `
+                    <div class="grid-2-col gap-0-5">
+                        <div class="form-group"><label>+ Max Slots</label><input type="number" id="eq-bonus" class="terminal-input mini"></div>
+                        <div class="form-group"><label>Location</label><input type="text" id="eq-loc" class="terminal-input mini"></div>
+                    </div>
+                    <div class="form-group"><label>Description</label><input type="text" id="eq-desc" class="terminal-input mini"></div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        document.getElementById('btn-confirm-equip').addEventListener('click', () => {
+            const name = document.getElementById('eq-name')?.value.trim();
+            if(!name) return; // name is required
+
+            const type = currentEquipType;
+            let item = { name, type, isEquip: true, tags: [...currentEquipTags] };
+            
+            item.size = parseFloat(document.getElementById('eq-size')?.value) || 1;
+
+            if (type === 'Weapon') {
+                item.hands = parseInt(document.getElementById('eq-hands')?.value) || 1;
+                item.dp = document.getElementById('eq-dp')?.value.trim();
+                item.stun = document.getElementById('eq-stun')?.value.trim();
+                item.parry = document.getElementById('eq-parry')?.value.trim();
+                item.block = document.getElementById('eq-block')?.value.trim();
+                item.acc = document.getElementById('eq-acc')?.value.trim();
+                item.range = document.getElementById('eq-range')?.value.trim();
+                item.dur = document.getElementById('eq-dur')?.value.trim();
+                item.hp = document.getElementById('eq-hp')?.value.trim();
+                item.desc = document.getElementById('eq-desc')?.value.trim();
+            } else if (type === 'Armor') {
+                item.dr = document.getElementById('eq-dr')?.value.trim();
+                item.dur = document.getElementById('eq-dur')?.value.trim();
+                item.hp = document.getElementById('eq-hp')?.value.trim();
+                item.loc = document.getElementById('eq-loc')?.value.trim();
+                item.material = document.getElementById('eq-material')?.value;
+                item.desc = document.getElementById('eq-desc')?.value.trim();
+            } else if (type === 'Special') {
+                item.loc = document.getElementById('eq-loc')?.value.trim();
+                item.desc = document.getElementById('eq-desc')?.value.trim();
+            } else if (type === 'Bag') {
+                item.bonus = document.getElementById('eq-bonus')?.value.trim();
+                item.loc = document.getElementById('eq-loc')?.value.trim();
+                item.desc = document.getElementById('eq-desc')?.value.trim();
+            }
+
+            if (currentEditIndex > -1) {
+                if (currentEditDest === 'inventory') {
+                    characterData.inventory[currentEditIndex] = item;
+                } else if (currentEditDest === 'equipped') {
+                    characterData.equipped[currentEditIndex] = item;
+                }
+                currentEditIndex = -1;
+                currentEditDest = '';
+            } else {
+                if (equipDestination === 'inventory') {
+                    if (!characterData.inventory) characterData.inventory = [];
+                    characterData.inventory.push(item);
+                } else {
+                    if (!characterData.equipped) characterData.equipped = [];
+                    characterData.equipped.push(item);
+                }
+            }
+            
+            populateSheet();
+            autoSaveDossier();
+            document.getElementById('equip-modal').classList.add('hidden');
+        });
+
+        document.getElementById('list-inventory').addEventListener('click', (e) => {
+            if (e.target.classList.contains('del-inv')) {
+                e.preventDefault();
+                const idx = e.target.getAttribute('data-idx');
+                characterData.inventory.splice(idx, 1);
+                populateSheet();
+                autoSaveDossier();
+            } else if (e.target.classList.contains('mod-inv')) {
+                e.preventDefault();
+                const idx = e.target.getAttribute('data-idx');
+                const action = e.target.getAttribute('data-action');
+                let item = characterData.inventory[idx];
+                
+                if (action === 'inc') {
+                    item.qty = (parseInt(item.qty) || 0) + 1;
+                } else if (action === 'dec') {
+                    item.qty = (parseInt(item.qty) || 0) - 1;
+                    if (item.qty <= 0) {
+                        item.qty = 1;
+                    }
+                }
+                populateSheet();
+                autoSaveDossier();
+            } else if (e.target.classList.contains('equip-item')) {
+                e.preventDefault();
+                const idx = e.target.getAttribute('data-idx');
+                const item = characterData.inventory[idx];
+                
+                if (item.type === 'Weapon') {
+                    const currentHands = (characterData.equipped || []).filter(i => i.type === 'Weapon').reduce((sum, w) => sum + (parseInt(w.hands) || 1), 0);
+                    const requiredHands = parseInt(item.hands) || 1;
+                    if (currentHands + requiredHands > 2) {
+                        alert("SYSTEM ALERT: Not enough hands available. Maximum 2 hands can be occupied by equipped weapons.");
+                        return;
+                    }
+                }
+                
+                characterData.inventory.splice(idx, 1);
+                if(!characterData.equipped) characterData.equipped = [];
+                characterData.equipped.push(item);
+                
+                populateSheet();
+                autoSaveDossier();
+            } else if (e.target.classList.contains('edit-inv')) {
+                e.preventDefault();
+                const idx = e.target.getAttribute('data-idx');
+                const item = characterData.inventory[idx];
+                
+                currentEditIndex = parseInt(idx);
+                currentEditDest = 'inventory';
+
+                if (item.isEquip) {
+                    currentEquipType = item.type;
+                    currentEquipTags = item.tags ? [...item.tags] : [];
+                    renderEquipForm(currentEquipType);
+                    
+                    setTimeout(() => {
+                        if(document.getElementById('eq-name')) document.getElementById('eq-name').value = item.name || '';
+                        if(document.getElementById('eq-size')) document.getElementById('eq-size').value = item.size || 1;
+                        if(document.getElementById('eq-hands')) document.getElementById('eq-hands').value = item.hands || 1;
+                        if(document.getElementById('eq-dp')) document.getElementById('eq-dp').value = item.dp || '';
+                        if(document.getElementById('eq-stun')) document.getElementById('eq-stun').value = item.stun || '';
+                        if(document.getElementById('eq-parry')) document.getElementById('eq-parry').value = item.parry || '';
+                        if(document.getElementById('eq-block')) document.getElementById('eq-block').value = item.block || '';
+                        if(document.getElementById('eq-acc')) document.getElementById('eq-acc').value = item.acc || '';
+                        if(document.getElementById('eq-range')) document.getElementById('eq-range').value = item.range || '';
+                        if(document.getElementById('eq-dur')) document.getElementById('eq-dur').value = item.dur || '';
+                        if(document.getElementById('eq-hp')) document.getElementById('eq-hp').value = item.hp || '';
+                        if(document.getElementById('eq-desc')) document.getElementById('eq-desc').value = item.desc || '';
+                        if(document.getElementById('eq-dr')) document.getElementById('eq-dr').value = item.dr || '';
+                        if(document.getElementById('eq-loc')) document.getElementById('eq-loc').value = item.loc || '';
+                        if(document.getElementById('eq-material')) document.getElementById('eq-material').value = item.material || '';
+                        if(document.getElementById('eq-bonus')) document.getElementById('eq-bonus').value = item.bonus || '';
+                    }, 0);
+                    
+                    document.getElementById('equip-step-1').classList.add('hidden');
+                    document.getElementById('equip-step-2').classList.remove('hidden');
+                    renderEquipTags();
+                    document.getElementById('equip-modal').classList.remove('hidden');
+                } else {
+                    document.getElementById('inv-modal-name').value = item.name || '';
+                    document.getElementById('inv-modal-size').value = item.size || 1;
+                    document.getElementById('inv-modal-qty').value = item.qty || 1;
+                    document.getElementById('inv-modal-desc').value = item.desc || '';
+                    document.getElementById('inv-modal').classList.remove('hidden');
+                }
+            }
+        });
+
+        document.getElementById('btn-open-inv-modal').addEventListener('click', () => {
+            currentEditIndex = -1;
+            currentEditDest = '';
+            document.getElementById('inv-type-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('btn-inv-type-cancel').addEventListener('click', () => {
+            document.getElementById('inv-type-modal').classList.add('hidden');
+        });
+
+        document.querySelectorAll('.btn-inv-type').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const target = e.target.getAttribute('data-type');
+                document.getElementById('inv-type-modal').classList.add('hidden');
+                if (target === 'item') {
+                    document.getElementById('inv-modal').classList.remove('hidden');
+                } else if (target === 'equip') {
+                    equipDestination = 'inventory';
+                    document.getElementById('equip-step-1').classList.remove('hidden');
+                    document.getElementById('equip-step-2').classList.add('hidden');
+                    document.getElementById('equip-modal').classList.remove('hidden');
+                }
+            });
+        });
+
+        document.getElementById('btn-inv-cancel').addEventListener('click', () => {
+            currentEditIndex = -1;
+            document.getElementById('inv-modal').classList.add('hidden');
+        });
+
+        document.getElementById('btn-confirm-inv').addEventListener('click', () => {
+            const name = document.getElementById('inv-modal-name').value.trim();
+            const size = parseFloat(document.getElementById('inv-modal-size').value);
+            const qty = parseInt(document.getElementById('inv-modal-qty').value) || 1;
+            const desc = document.getElementById('inv-modal-desc').value.trim();
             
             if (name) {
-                if (!characterData.inventory) characterData.inventory = [];
-                characterData.inventory.push({ name, size, qty });
+                if (currentEditIndex > -1 && currentEditDest === 'inventory') {
+                    const item = characterData.inventory[currentEditIndex];
+                    item.name = name;
+                    item.size = size;
+                    item.qty = qty;
+                    item.desc = desc;
+                    currentEditIndex = -1;
+                    currentEditDest = '';
+                } else {
+                    if (!characterData.inventory) characterData.inventory = [];
+                    characterData.inventory.push({ name, size, qty, desc });
+                }
                 populateSheet();
-                document.getElementById('new-inv-name').value = '';
-                document.getElementById('new-inv-qty').value = '1';
+                document.getElementById('inv-modal-name').value = '';
+                document.getElementById('inv-modal-qty').value = '1';
+                document.getElementById('inv-modal-desc').value = '';
+                document.getElementById('inv-modal').classList.add('hidden');
                 autoSaveDossier();
             }
         });
@@ -648,27 +973,9 @@
             if (characterData.current_amps === undefined) characterData.current_amps = characterData.amps;
 
             let spent_xp_attrs = 0;
-            
-            let m_int = int - 10, m_con = con - 10, m_will = will - 10, m_per = per - 10;
-            let m_pkg = 0;
-            if (m_int > 0 && m_con > 0 && m_will > 0 && m_per > 0) m_pkg = Math.min(m_int, m_con, m_will, m_per);
-            else if (m_int < 0 && m_con < 0 && m_will < 0 && m_per < 0) m_pkg = Math.max(m_int, m_con, m_will, m_per);
-            
-            spent_xp_attrs += m_pkg * 35;
-            spent_xp_attrs += (m_int - m_pkg) * 15;
-            spent_xp_attrs += (m_con - m_pkg) * 10;
-            spent_xp_attrs += (m_will - m_pkg) * 10;
-            spent_xp_attrs += (m_per - m_pkg) * 10;
-            
-            let p_str = str - 10, p_dex = dex - 10, p_hth = hth - 10;
-            let p_pkg = 0;
-            if (p_str > 0 && p_dex > 0 && p_hth > 0) p_pkg = Math.min(p_str, p_dex, p_hth);
-            else if (p_str < 0 && p_dex < 0 && p_hth < 0) p_pkg = Math.max(p_str, p_dex, p_hth);
-            
-            spent_xp_attrs += p_pkg * 36;
-            spent_xp_attrs += (p_str - p_pkg) * 15;
-            spent_xp_attrs += (p_dex - p_pkg) * 15;
-            spent_xp_attrs += (p_hth - p_pkg) * 10;
+            if (window.OEShared && window.OEShared.calculateXP) {
+                spent_xp_attrs = window.OEShared.calculateXP({ int, con, will, per, str, dex, hth });
+            }
             
             spent_xp_attrs += (parseInt(characterData.bought_hp) || 0) * 5;
             spent_xp_attrs += (parseInt(characterData.bought_stun) || 0) * 5;
@@ -836,77 +1143,104 @@
             validateCompromised(); 
 
             const advList = document.getElementById('list-adv');
-            advList.innerHTML = '';
             if (characterData.adv && characterData.adv.length > 0) {
-                characterData.adv.forEach(item => {
+                advList.innerHTML = characterData.adv.map(item => {
                     const noteHtml = item.note ? `<div class="item-note">${item.note}</div>` : '';
-                    advList.innerHTML += `<li>${item.name} <span class="cost-tag">[${item.cost}]</span>${noteHtml}</li>`;
-                });
+                    return `<li>${item.name} <span class="cost-tag">[${item.cost}]</span>${noteHtml}</li>`;
+                }).join('');
             } else {
                 advList.innerHTML = '<li>NO DATA <span class="cost-tag">[0]</span></li>';
             }
 
             const disList = document.getElementById('list-dis');
-            disList.innerHTML = '';
             if (characterData.dis && characterData.dis.length > 0) {
-                characterData.dis.forEach(item => {
+                disList.innerHTML = characterData.dis.map(item => {
                     const noteHtml = item.note ? `<div class="item-note">${item.note}</div>` : '';
-                    disList.innerHTML += `<li>${item.name} <span class="cost-tag">[${item.cost}]</span>${noteHtml}</li>`;
-                });
+                    return `<li>${item.name} <span class="cost-tag">[${item.cost}]</span>${noteHtml}</li>`;
+                }).join('');
             } else {
                 disList.innerHTML = '<li>NO DATA <span class="cost-tag">[0]</span></li>';
             }
             
             const spellList = document.getElementById('list-spells');
-            spellList.innerHTML = '';
             if (characterData.spells && characterData.spells.length > 0) {
-                characterData.spells.forEach((item, index) => {
-                    const noteHtml = item.note ? `<div class="item-note">${item.note} <br><a href="#" class="del-spell c-red mt-0-5 d-inline-block" data-idx="${index}">[DELETE SPELL]</a></div>` : `<div class="item-note"><a href="#" class="del-spell c-red mt-0-5 d-inline-block" data-idx="${index}">[DELETE SPELL]</a></div>`;
-                    spellList.innerHTML += `<li>${item.name} <span class="cost-tag">[${item.cost}]</span>${noteHtml}</li>`;
-                });
+                spellList.innerHTML = characterData.spells.map((item, index) => {
+                    let costParts = [];
+                    if(item.amp) costParts.push(`${item.amp} AMP`);
+                    if(item.ap) costParts.push(`${item.ap} AP`);
+                    let costStr = costParts.length > 0 ? `[${costParts.join(', ')}]` : '';
+                    let effStr = item.effect ? ` | EFF: ${item.effect}` : '';
+
+                    const noteHtml = item.note ? `<div class="item-note">> ${item.note} <br><a href="#" class="del-spell c-red mt-0-5 d-inline-block" data-idx="${index}">[DELETE SPELL]</a></div>` : `<div class="item-note"><a href="#" class="del-spell c-red mt-0-5 d-inline-block" data-idx="${index}">[DELETE SPELL]</a></div>`;
+                    return `<li>${item.name} <span class="cost-tag">${costStr}${effStr}</span>${noteHtml}</li>`;
+                }).join('');
             } else {
                 spellList.innerHTML = '<li>NO SPELL DATA <span class="cost-tag">[0]</span></li>';
             }
 
+            let usedSlots = 0;
             const equipList = document.getElementById('list-equipped');
-            equipList.innerHTML = '';
             let bonusSlots = 0;
             
             if (characterData.equipped && characterData.equipped.length > 0) {
-                characterData.equipped.forEach((item, index) => {
+                equipList.innerHTML = characterData.equipped.map((item, index) => {
                     if (item.bonus) bonusSlots += parseFloat(item.bonus);
+                    if (item.type === 'Weapon') usedSlots += parseInt(item.hands) || 1;
                     const bonusText = item.bonus ? ` [+${item.bonus} Max Slots]` : '';
                     
                     let statsText = '';
                     if (item.dp_dr) statsText += ` | DP/DR: ${item.dp_dr}`;
-                    if (item.parry) statsText += ` | P/B: ${item.parry}`;
+                    if (item.dp) statsText += ` | DP: ${item.dp}`;
+                    if (item.dr) statsText += ` | DR: ${item.dr}`;
+                    if (item.stun) statsText += ` | STUN: ${item.stun}`;
+                    if (item.parry && !item.dp_dr) statsText += ` | PARRY: ${item.parry}`;
+                    else if (item.parry) statsText += ` | P/B: ${item.parry}`;
+                    if (item.block) statsText += ` | BLK: ${item.block}`;
                     if (item.range) statsText += ` | RNG: ${item.range}`;
                     if (item.acc) statsText += ` | ACC: ${item.acc}`;
                     if (item.dur) statsText += ` | DUR: ${item.dur}`;
+                    if (item.hp) statsText += ` | HP: ${item.hp}`;
+                    if (item.material) statsText += ` | MAT: ${item.material}`;
                     if (item.effects) statsText += ` | EFF: ${item.effects}`;
                     
-                    equipList.innerHTML += `<li>${item.name} <span class="cost-tag">[${item.type} - ${item.loc}]</span> <div class="item-note">${bonusText}${statsText} <br><a href="#" class="del-equip c-red mt-0-5 d-inline-block" data-idx="${index}">[DELETE ITEM]</a></div></li>`;
-                });
+                    let tagsHtml = '';
+                    if (item.tags && item.tags.length > 0) {
+                        tagsHtml = ` | TAGS: ${item.tags.join(', ')}`;
+                    }
+                    
+                    let descHtml = item.desc ? `<br>> DESC: ${item.desc}` : '';
+                    let locLabel = item.loc ? item.loc : 'Equipped';
+                    
+                    return `<li>${item.name} <span class="cost-tag">[${item.type} - ${locLabel}]</span> <div class="item-note">${bonusText}${statsText}${tagsHtml}${descHtml} <br><a href="#" class="edit-equip c-amber mt-0-5 mr-0-5 d-inline-block" data-idx="${index}">[EDIT ITEM]</a> <a href="#" class="unequip-item c-amber mt-0-5 mr-0-5 d-inline-block" data-idx="${index}">[UNEQUIP]</a> <a href="#" class="del-equip c-red mt-0-5 d-inline-block" data-idx="${index}">[DELETE ITEM]</a></div></li>`;
+                }).join('');
             } else {
                 equipList.innerHTML = '<li>NO EQUIPPED DATA <span class="cost-tag">[0]</span></li>';
             }
 
             const refGearList = document.getElementById('quick-ref-gear');
-            refGearList.innerHTML = '';
             let hasRefGear = false;
 
             if (characterData.equipped && characterData.equipped.length > 0) {
-                characterData.equipped.forEach((item) => {
+                refGearList.innerHTML = characterData.equipped.map((item) => {
                     if (item.type === 'Weapon' || item.type === 'Armor') {
                         hasRefGear = true;
                         let statsHtml = [];
                         if (item.dp_dr) statsHtml.push(`<span class="c-amber">[${item.type === 'Weapon' ? 'DP' : 'DR'}: ${item.dp_dr}]</span>`);
-                        if (item.parry) statsHtml.push(`<span class="c-amber">[PARRY/BLK: ${item.parry}]</span>`);
+                        if (item.parry && item.dp_dr) statsHtml.push(`<span class="c-amber">[PARRY/BLK: ${item.parry}]</span>`);
+                        
+                        if (item.dp) statsHtml.push(`<span class="c-amber">[DP: ${item.dp}]</span>`);
+                        if (item.dr) statsHtml.push(`<span class="c-amber">[DR: ${item.dr}]</span>`);
+                        if (item.stun) statsHtml.push(`<span class="c-amber">[STUN: ${item.stun}]</span>`);
+                        if (item.parry && !item.dp_dr) statsHtml.push(`<span class="c-amber">[PARRY: ${item.parry}]</span>`);
+                        if (item.block) statsHtml.push(`<span class="c-amber">[BLK: ${item.block}]</span>`);
                         if (item.range) statsHtml.push(`<span class="c-amber">[RNG: ${item.range}]</span>`);
                         if (item.acc) statsHtml.push(`<span class="c-amber">[ACC: ${item.acc}]</span>`);
                         if (item.dur) statsHtml.push(`<span class="c-amber">[DUR: ${item.dur}]</span>`);
+                        if (item.hp) statsHtml.push(`<span class="c-amber">[HP: ${item.hp}]</span>`);
                         
                         let effectHtml = item.effects ? `<div class="c-text-dim font-size-1 mt-0-25">>> EFFECTS: ${item.effects}</div>` : '';
+                        if (item.tags && item.tags.length > 0) effectHtml += `<div class="c-text-dim font-size-1 mt-0-25">>> TAGS: ${item.tags.join(', ')}</div>`;
+                        if (item.material) effectHtml += `<div class="c-text-dim font-size-1 mt-0-25">>> MAT: ${item.material}</div>`;
                         
                         refGearList.innerHTML += `<div class="mb-1"><div class="c-green font-size-1">> <strong>${item.name}</strong> <span class="c-text-dim">(${item.type})</span></div><div class="mt-0-25 font-size-1">${statsHtml.join(' ')}</div>${effectHtml}</div>`;
                     }
@@ -919,17 +1253,41 @@
 
             const invList = document.getElementById('list-inventory');
             invList.innerHTML = '';
-            let usedSlots = 0;
             
             if (characterData.inventory && characterData.inventory.length > 0) {
                 characterData.inventory.forEach((item, index) => {
-                    const slots = Math.ceil(item.qty * item.size);
-                    usedSlots += slots;
-                    
-                    const sizeLabel = item.size == 0.1 ? 'Tiny' : item.size == 0.5 ? 'Small' : item.size == 1 ? 'Med' : item.size == 2 ? 'Large' : 'Oversized';
-                    
-                    invList.innerHTML += `<li>${item.name} (x${item.qty}) <span class="cost-tag">[${slots} Slot${slots !== 1 ? 's' : ''}]</span> <div class="item-note">Size: ${sizeLabel} | Qty: ${item.qty} <br><a href="#" class="del-inv c-red mt-0-5 d-inline-block" data-idx="${index}">[DELETE ITEM]</a></div></li>`;
-                });
+                    if (item.isEquip) {
+                        const slots = Math.ceil(item.size || 1);
+                        usedSlots += slots;
+                        let bonusText = item.bonus ? ` [+${item.bonus} Max Slots]` : '';
+                        let statsText = '';
+                        if (item.dp_dr) statsText += ` | DP/DR: ${item.dp_dr}`;
+                        if (item.dp) statsText += ` | DP: ${item.dp}`;
+                        if (item.dr) statsText += ` | DR: ${item.dr}`;
+                        if (item.stun) statsText += ` | STUN: ${item.stun}`;
+                        if (item.parry && !item.dp_dr) statsText += ` | PARRY: ${item.parry}`;
+                        else if (item.parry) statsText += ` | P/B: ${item.parry}`;
+                        if (item.block) statsText += ` | BLK: ${item.block}`;
+                        if (item.range) statsText += ` | RNG: ${item.range}`;
+                        if (item.acc) statsText += ` | ACC: ${item.acc}`;
+                        if (item.dur) statsText += ` | DUR: ${item.dur}`;
+                        if (item.hp) statsText += ` | HP: ${item.hp}`;
+                        if (item.material) statsText += ` | MAT: ${item.material}`;
+                        if (item.effects) statsText += ` | EFF: ${item.effects}`;
+                        let tagsHtml = item.tags && item.tags.length > 0 ? ` | TAGS: ${item.tags.join(', ')}` : '';
+                        let descHtml = item.desc ? `<br>> DESC: ${item.desc}` : '';
+                        const sizeLabel = item.size == 0.1 ? 'Tiny' : item.size == 0.5 ? 'Small' : item.size == 1 ? 'Med' : item.size == 2 ? 'Large' : 'Oversized';
+                        
+                        return `<li>${item.name} <span class="cost-tag">[${item.type} - Size: ${sizeLabel}] (${slots} Slot${slots !== 1 ? 's' : ''})</span> <div class="item-note">${bonusText}${statsText}${tagsHtml}${descHtml} <br><a href="#" class="edit-inv c-amber mt-0-5 mr-0-5 d-inline-block" data-idx="${index}">[EDIT ITEM]</a> <a href="#" class="equip-item c-amber mt-0-5 mr-0-5 d-inline-block" data-idx="${index}">[EQUIP]</a> <a href="#" class="del-inv c-red mt-0-5 d-inline-block" data-idx="${index}">[DELETE ITEM]</a></div></li>`;
+                    } else {
+                        const slots = Math.ceil(item.qty * item.size);
+                        usedSlots += slots;
+                        const sizeLabel = item.size == 0.1 ? 'Tiny' : item.size == 0.5 ? 'Small' : item.size == 1 ? 'Med' : item.size == 2 ? 'Large' : 'Oversized';
+                        let descHtml = item.desc ? `<br>> DESC: ${item.desc}` : '';
+                        
+                        return `<li>${item.name} (x${item.qty}) <span class="cost-tag">[${slots} Slot${slots !== 1 ? 's' : ''}]</span> <div class="item-note">Size: ${sizeLabel} | Qty: ${item.qty} ${descHtml}<br><a href="#" class="edit-inv c-amber mt-0-5 mr-0-5 d-inline-block" data-idx="${index}">[EDIT ITEM]</a> <a href="#" class="mod-inv c-amber mt-0-5 mr-0-5 d-inline-block" data-idx="${index}" data-action="inc">[+ QTY]</a> <a href="#" class="mod-inv c-amber mt-0-5 mr-0-5 d-inline-block" data-idx="${index}" data-action="dec">[- QTY]</a> <a href="#" class="del-inv c-red mt-0-5 d-inline-block" data-idx="${index}">[DELETE ITEM]</a></div></li>`;
+                    }
+                }).join('');
             } else {
                 invList.innerHTML = '<li>NO INVENTORY DATA <span class="cost-tag">[0]</span></li>';
             }
@@ -1063,6 +1421,44 @@
                 populateSheet(); 
             }, 500);
         }
+        
+        document.getElementById('list-equipped').addEventListener('click', (e) => {
+            if (e.target.classList.contains('edit-equip')) {
+                e.preventDefault();
+                const idx = e.target.getAttribute('data-idx');
+                const item = characterData.equipped[idx];
+                
+                currentEditIndex = parseInt(idx);
+                currentEditDest = 'equipped';
+                currentEquipType = item.type;
+                currentEquipTags = item.tags ? [...item.tags] : [];
+                renderEquipForm(currentEquipType);
+                
+                setTimeout(() => {
+                    if(document.getElementById('eq-name')) document.getElementById('eq-name').value = item.name || '';
+                    if(document.getElementById('eq-size')) document.getElementById('eq-size').value = item.size || 1;
+                    if(document.getElementById('eq-hands')) document.getElementById('eq-hands').value = item.hands || 1;
+                    if(document.getElementById('eq-dp')) document.getElementById('eq-dp').value = item.dp || '';
+                    if(document.getElementById('eq-stun')) document.getElementById('eq-stun').value = item.stun || '';
+                    if(document.getElementById('eq-parry')) document.getElementById('eq-parry').value = item.parry || '';
+                    if(document.getElementById('eq-block')) document.getElementById('eq-block').value = item.block || '';
+                    if(document.getElementById('eq-acc')) document.getElementById('eq-acc').value = item.acc || '';
+                    if(document.getElementById('eq-range')) document.getElementById('eq-range').value = item.range || '';
+                    if(document.getElementById('eq-dur')) document.getElementById('eq-dur').value = item.dur || '';
+                    if(document.getElementById('eq-hp')) document.getElementById('eq-hp').value = item.hp || '';
+                    if(document.getElementById('eq-desc')) document.getElementById('eq-desc').value = item.desc || '';
+                    if(document.getElementById('eq-dr')) document.getElementById('eq-dr').value = item.dr || '';
+                    if(document.getElementById('eq-loc')) document.getElementById('eq-loc').value = item.loc || '';
+                    if(document.getElementById('eq-material')) document.getElementById('eq-material').value = item.material || '';
+                    if(document.getElementById('eq-bonus')) document.getElementById('eq-bonus').value = item.bonus || '';
+                }, 0);
+                
+                document.getElementById('equip-step-1').classList.add('hidden');
+                document.getElementById('equip-step-2').classList.remove('hidden');
+                renderEquipTags();
+                document.getElementById('equip-modal').classList.remove('hidden');
+            }
+        });
         
         // Boot Initialization 
         populateSheet();
