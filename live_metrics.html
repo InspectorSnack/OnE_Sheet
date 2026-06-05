@@ -107,20 +107,45 @@
     </div>
 </div>
 
+<div id="currency-modal" class="overlay-screen hidden flex-start overflow-y-auto pt-3">
+    <h1>> ADJUST CURRENCY <span class="cursor-blink">_</span></h1>
+    <div class="header-rule w-100 max-w-400 mb-2"></div>
+    
+    <div class="w-100 max-w-400 text-left">
+        <p class="mb-1 text-center font-size-1">Current Balance: <span id="currency-modal-current" class="c-amber" style="font-size: 1.5rem; vertical-align: middle; margin-left: 0.5rem;">0</span></p>
+        
+        <div class="form-group">
+            <label>Amount to Adjust</label>
+            <input type="number" id="currency-modal-amount" class="terminal-input" placeholder="0">
+        </div>
+
+        <div class="grid-2-col gap-0-5 mb-1">
+            <button type="button" id="btn-currency-add" class="terminal-btn flex-1">+ ADD</button>
+            <button type="button" id="btn-currency-sub" class="terminal-btn flex-1">- SUBTRACT</button>
+        </div>
+
+        <div class="flex-center gap-1 mt-1 mb-2">
+            <button type="button" id="btn-currency-cancel" class="terminal-btn flex-1 btn-red">[ CANCEL ]</button>
+            <button type="button" id="btn-currency-set" class="terminal-btn flex-2">SET EXACT</button>
+        </div>
+    </div>
+</div>
+
 <div id="main-sheet" class="container">
     <header>
         <h1>> Live Metrics <span class="cursor-blink">_</span></h1>
-        <div class="header-sub">// Outlands and Echos</div>
+        <div class="header-sub">
+            // Outlands and Echos<br>
+            // NAME: <span id="char-name" data-key="name" contenteditable="true" class="c-text-primary"></span> &nbsp;&nbsp;|&nbsp;&nbsp; PLAYER: <span id="char-player" data-key="player" contenteditable="true" class="c-text-primary"></span>
+        </div>
         <div class="header-rule"></div>
         
         <div class="char-meta-grid">
-            <div class="meta-item">NAME: <span id="char-name" data-key="name" contenteditable="true"></span></div>
-            <div class="meta-item">PLAYER: <span id="char-player" data-key="player" contenteditable="true"></span></div>
             <div class="meta-item">CLASS: <select id="char-class" data-key="class" class="terminal-input mini inline-select"></select></div>
             <div class="meta-item">SUBCLASS: <select id="char-subclass" data-key="subclass" class="terminal-input mini inline-select"></select></div>
-            <div class="meta-item stat-control">LEVEL: <span><span id="char-level" class="c-text-primary">1</span><span class="spinner-arrows"><span class="arrow up" data-key="level" data-action="up">▲</span><span class="arrow down" data-key="level" data-action="down">▼</span></span></span></div>
-            <div class="meta-item stat-control">GIFT XP: <span><span id="char-gift-xp" class="c-text-primary">0</span><span class="spinner-arrows"><span class="arrow up" data-key="gift_xp" data-action="up">▲</span><span class="arrow down" data-key="gift_xp" data-action="down">▼</span></span></span></div>
-            <div class="meta-item stat-control">GIFT AP: <span><span id="char-gift-ap" class="c-text-primary">0</span><span class="spinner-arrows"><span class="arrow up" data-key="gift_ap" data-action="up">▲</span><span class="arrow down" data-key="gift_ap" data-action="down">▼</span></span></span></div>
+            <div class="meta-item">LEVEL: <span class="stat-control"><span id="char-level" class="c-text-primary">1</span><span class="spinner-arrows"><span class="arrow up" data-key="level" data-action="up">▲</span><span class="arrow down" data-key="level" data-action="down">▼</span></span></span></div>
+            <div class="meta-item">GIFT XP: <span class="stat-control"><span id="char-gift-xp" class="c-text-primary">0</span><span class="spinner-arrows"><span class="arrow up" data-key="gift_xp" data-action="up">▲</span><span class="arrow down" data-key="gift_xp" data-action="down">▼</span></span></span></div>
+            <div class="meta-item">GIFT AP: <span class="stat-control"><span id="char-gift-ap" class="c-text-primary">0</span><span class="spinner-arrows"><span class="arrow up" data-key="gift_ap" data-action="up">▲</span><span class="arrow down" data-key="gift_ap" data-action="down">▼</span></span></span></div>
             <div class="meta-item">XP (REM/TOT): <span id="char-xp-rem" class="c-amber">0</span> / <span id="char-xp-tot">0</span></div>
             <div class="meta-item">AP (REM/TOT): <span id="char-ap-rem" class="c-amber">0</span> / <span id="char-ap-tot">0</span></div>
             <div class="meta-item d-none" id="pp-container">PRESTIGE: <span id="char-pp" class="c-amber">0 PP</span></div>
@@ -167,42 +192,45 @@
     </div>
 
     <div class="panel field-conditions-panel">
-        <div class="panel-legend"><span class="legend-text">Field Conditions</span></div>
-        <div class="grid-2-col mb-1-5">
-            <div>
-                <div class="readout-line">
-                    <span class="line-key" id="label-fatigue">FATIGUE</span><span class="line-dots">.............</span>
-                    <select id="sel-fatigue" data-key="fatigue" class="terminal-input mini inline-select right">
-                        <option value="Prime" class="bg-bg">Prime</option>
-                        <option value="Steady" class="bg-bg">Steady</option>
-                        <option value="Winded" class="bg-bg" selected>Winded</option>
-                        <option value="Strained" class="bg-bg">Strained</option>
-                        <option value="Exhausted" class="bg-bg">Exhausted</option>
-                    </select>
-                </div>
-                <div class="condition-note" id="note-fatigue">no benefits</div>
-            </div>
-            <div>
-                <div class="readout-line">
-                    <span class="line-key" id="label-composure">COMPOSURE</span><span class="line-dots">...........</span>
-                    <select id="sel-composure" data-key="composure" class="terminal-input mini inline-select right">
-                        <option value="Solid" class="bg-bg">Solid</option>
-                        <option value="Stable" class="bg-bg" selected>Stable</option>
-                        <option value="Shaken" class="bg-bg">Shaken</option>
-                        <option value="Compromised" class="bg-bg">Compromised</option>
-                    </select>
-                </div>
-                <div class="condition-note" id="note-composure">no benefits</div>
-            </div>
+        <div class="panel-legend">
+            <span class="legend-text">Field Conditions</span>
+            <span id="currency-tab-btn" class="pointer c-amber font-size-1 ml-0-5" title="Click to adjust">[ FUNDS: <span id="currency-display">0</span> ]</span>
         </div>
-        <div class="grid-2-col">
+            <div class="grid-3-col">
+                <div>
+                    <div class="mb-1">
+                    <div class="readout-line">
+                        <span class="line-key" id="label-fatigue">FATIGUE</span><span class="line-dots">.............</span>
+                        <select id="sel-fatigue" data-key="fatigue" class="terminal-input mini inline-select right">
+                            <option value="Prime" class="bg-bg">Prime</option>
+                            <option value="Steady" class="bg-bg">Steady</option>
+                            <option value="Winded" class="bg-bg" selected>Winded</option>
+                            <option value="Strained" class="bg-bg">Strained</option>
+                            <option value="Exhausted" class="bg-bg">Exhausted</option>
+                        </select>
+                    </div>
+                    <div class="condition-note" id="note-fatigue">no benefits</div>
+                </div>
+                <div>
+                    <div class="readout-line">
+                        <span class="line-key" id="label-composure">COMPOSURE</span><span class="line-dots">...........</span>
+                        <select id="sel-composure" data-key="composure" class="terminal-input mini inline-select right">
+                            <option value="Solid" class="bg-bg">Solid</option>
+                            <option value="Stable" class="bg-bg" selected>Stable</option>
+                            <option value="Shaken" class="bg-bg">Shaken</option>
+                            <option value="Compromised" class="bg-bg">Compromised</option>
+                        </select>
+                    </div>
+                    <div class="condition-note" id="note-composure">no benefits</div>
+                </div>
+            </div>
             <div>
                 <div class="readout-line" title="Priority determines turn order."><span class="line-key">PRIORITY</span><span class="line-dots">..........</span><span class="line-value stat-control"><span id="cond-priority"></span></span></div>
                 <div class="readout-line"><span class="line-key">BASE SPEED</span><span class="line-dots">........</span><span class="line-value stat-control"><span id="cond-speed-base"></span></span></div>
-            </div>
-            <div>
                 <div class="readout-line"><span class="line-key">HALF SPEED</span><span class="line-dots">........</span><span class="line-value stat-control"><span id="cond-speed-half"></span></span></div>
                 <div class="readout-line"><span class="line-key">SPRINT SPEED</span><span class="line-dots">......</span><span class="line-value stat-control"><span id="cond-speed-sprint"></span></span></div>
+            </div>
+            <div>
                 <div class="readout-line d-none" id="cond-connection-row"><span class="line-key">CONNECTION</span><span class="line-dots">........</span><span class="line-value stat-control"><span id="cond-connection"></span></span></div>
                 <div class="readout-line d-none" id="cond-amps-row"><span class="line-key">AMPS</span><span class="line-dots">..............</span><span class="line-value"><span id="cond-amps-current" class="c-amber" data-key="current_amps" contenteditable="true"></span> <span class="c-amber">/</span> <span class="stat-control c-blue"><span id="cond-amps" class="pointer" title="Reset AMPs"></span></span></span></div>
             </div>
@@ -314,7 +342,7 @@
     </div>
 </div>
 
-<script src="class_Anomalist.html"></script>
+<script src="shared.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         if (!sessionStorage.getItem('booted')) {
@@ -432,33 +460,35 @@
                 const action = e.target.getAttribute('data-action');
                 const key = e.target.getAttribute('data-key');
                 
+                const bs = (window.OEShared.subclassStats && window.OEShared.subclassStats[characterData.subclass]) ? window.OEShared.subclassStats[characterData.subclass] : { int: 10, con: 10, will: 10, per: 10, str: 10, dex: 10, hth: 10 };
+
                 if (action === 'up-mental-all') {
-                    characterData.int = Math.min(20, (parseInt(characterData.int)||10) + 1);
-                    characterData.con = Math.min(20, (parseInt(characterData.con)||10) + 1);
-                    characterData.will = Math.min(20, (parseInt(characterData.will)||10) + 1);
-                    characterData.per = Math.min(20, (parseInt(characterData.per)||10) + 1);
+                    characterData.int = Math.min(20, (parseInt(characterData.int)||bs.int) + 1);
+                    characterData.con = Math.min(20, (parseInt(characterData.con)||bs.con) + 1);
+                    characterData.will = Math.min(20, (parseInt(characterData.will)||bs.will) + 1);
+                    characterData.per = Math.min(20, (parseInt(characterData.per)||bs.per) + 1);
                     populateSheet(); autoSaveDossier(); return;
                 } else if (action === 'down-mental-all') {
-                    characterData.int = Math.max(1, (parseInt(characterData.int)||10) - 1);
-                    characterData.con = Math.max(1, (parseInt(characterData.con)||10) - 1);
-                    characterData.will = Math.max(1, (parseInt(characterData.will)||10) - 1);
-                    characterData.per = Math.max(1, (parseInt(characterData.per)||10) - 1);
+                    characterData.int = Math.max(1, (parseInt(characterData.int)||bs.int) - 1);
+                    characterData.con = Math.max(1, (parseInt(characterData.con)||bs.con) - 1);
+                    characterData.will = Math.max(1, (parseInt(characterData.will)||bs.will) - 1);
+                    characterData.per = Math.max(1, (parseInt(characterData.per)||bs.per) - 1);
                     populateSheet(); autoSaveDossier(); return;
                 } else if (action === 'up-physical-all') {
-                    characterData.str = Math.min(20, (parseInt(characterData.str)||10) + 1);
-                    characterData.dex = Math.min(20, (parseInt(characterData.dex)||10) + 1);
-                    characterData.hth = Math.min(20, (parseInt(characterData.hth)||10) + 1);
+                    characterData.str = Math.min(20, (parseInt(characterData.str)||bs.str) + 1);
+                    characterData.dex = Math.min(20, (parseInt(characterData.dex)||bs.dex) + 1);
+                    characterData.hth = Math.min(20, (parseInt(characterData.hth)||bs.hth) + 1);
                     populateSheet(); autoSaveDossier(); return;
                 } else if (action === 'down-physical-all') {
-                    characterData.str = Math.max(1, (parseInt(characterData.str)||10) - 1);
-                    characterData.dex = Math.max(1, (parseInt(characterData.dex)||10) - 1);
-                    characterData.hth = Math.max(1, (parseInt(characterData.hth)||10) - 1);
+                    characterData.str = Math.max(1, (parseInt(characterData.str)||bs.str) - 1);
+                    characterData.dex = Math.max(1, (parseInt(characterData.dex)||bs.dex) - 1);
+                    characterData.hth = Math.max(1, (parseInt(characterData.hth)||bs.hth) - 1);
                     populateSheet(); autoSaveDossier(); return;
                 }
                 
                 if (key) {
                     let val = parseInt(characterData[key]);
-                    if (isNaN(val)) val = (key.startsWith('bought_') || key.startsWith('gift_')) ? 0 : (key === 'level' ? 1 : 10);
+                    if (isNaN(val)) val = (key.startsWith('bought_') || key.startsWith('gift_')) ? 0 : (key === 'level' ? 1 : (bs[key] || 10));
                     
                     if (action === 'up') {
                         const maxLimits = ['int', 'con', 'will', 'per', 'str', 'dex', 'hth'];
@@ -675,24 +705,36 @@
                                 <option value="2" class="bg-bg">2 Hands</option>
                             </select>
                         </div>
-                        <div class="form-group"><label>DP (Damage Potential)</label><input type="number" id="eq-dp" class="terminal-input mini"></div>
-                        <div class="form-group"><label>Stun</label><input type="number" id="eq-stun" class="terminal-input mini"></div>
-                        <div class="form-group"><label>Parry</label><input type="number" id="eq-parry" class="terminal-input mini"></div>
-                        <div class="form-group"><label>Block</label><input type="number" id="eq-block" class="terminal-input mini"></div>
-                        <div class="form-group"><label>Accuracy (ACC)</label><input type="number" id="eq-acc" class="terminal-input mini"></div>
-                        <div class="form-group"><label>Range</label><input type="number" id="eq-range" class="terminal-input mini"></div>
-                        <div class="form-group"><label>Durability (DUR)</label><input type="number" id="eq-dur" class="terminal-input mini"></div>
-                        <div class="form-group"><label>Item HP</label><input type="number" id="eq-hp" class="terminal-input mini"></div>
+                <div class="form-group"><label>DP (Damage Potential)</label><input type="number" id="eq-dp" class="terminal-input mini" onkeydown="return false;"></div>
+                <div class="form-group"><label>Stun</label><input type="number" id="eq-stun" class="terminal-input mini" onkeydown="return false;"></div>
+                <div class="form-group"><label>Parry</label><input type="number" id="eq-parry" class="terminal-input mini" onkeydown="return false;"></div>
+                <div class="form-group"><label>Block</label><input type="number" id="eq-block" class="terminal-input mini" onkeydown="return false;"></div>
+                <div class="form-group"><label>Accuracy (ACC)</label><input type="number" id="eq-acc" class="terminal-input mini" onkeydown="return false;"></div>
+                <div class="form-group"><label>Range</label><input type="number" id="eq-range" class="terminal-input mini" onkeydown="return false;"></div>
+                <div class="form-group"><label>Durability (DUR)</label><input type="number" id="eq-dur" class="terminal-input mini" onkeydown="return false;"></div>
+                <div class="form-group"><label>Item HP</label><input type="number" id="eq-hp" class="terminal-input mini" onkeydown="return false;"></div>
                     </div>
                     <div class="form-group"><label>Description</label><input type="text" id="eq-desc" class="terminal-input mini"></div>
                 `;
             } else if (type === 'Armor') {
                 html += `
                     <div class="grid-2-col gap-0-5">
-                        <div class="form-group"><label>DR (Damage Resistance)</label><input type="number" id="eq-dr" class="terminal-input mini"></div>
-                        <div class="form-group"><label>Durability (DUR)</label><input type="number" id="eq-dur" class="terminal-input mini"></div>
-                        <div class="form-group"><label>Item HP</label><input type="number" id="eq-hp" class="terminal-input mini"></div>
-                        <div class="form-group"><label>Location</label><input type="text" id="eq-loc" class="terminal-input mini"></div>
+                <div class="form-group"><label>DR (Damage Resistance)</label><input type="number" id="eq-dr" class="terminal-input mini" onkeydown="return false;"></div>
+                <div class="form-group"><label>Durability (DUR)</label><input type="number" id="eq-dur" class="terminal-input mini" onkeydown="return false;"></div>
+                <div class="form-group"><label>Item HP</label><input type="number" id="eq-hp" class="terminal-input mini" onkeydown="return false;"></div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <select id="eq-loc" class="terminal-input mini bg-transparent c-text-primary">
+                                <option value="" class="bg-bg">None</option>
+                                <option value="Head" class="bg-bg">Head</option>
+                                <option value="Torso" class="bg-bg">Torso</option>
+                                <option value="Waist" class="bg-bg">Waist</option>
+                                <option value="Legs" class="bg-bg">Legs</option>
+                                <option value="Arms" class="bg-bg">Arms</option>
+                                <option value="Feet" class="bg-bg">Feet</option>
+                                <option value="Hands" class="bg-bg">Hands</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Material</label>
@@ -715,7 +757,7 @@
             } else if (type === 'Bag') {
                 html += `
                     <div class="grid-2-col gap-0-5">
-                        <div class="form-group"><label>+ Max Slots</label><input type="number" id="eq-bonus" class="terminal-input mini"></div>
+                <div class="form-group"><label>+ Max Slots</label><input type="number" id="eq-bonus" class="terminal-input mini" onkeydown="return false;"></div>
                         <div class="form-group"><label>Location</label><input type="text" id="eq-loc" class="terminal-input mini"></div>
                     </div>
                     <div class="form-group"><label>Description</label><input type="text" id="eq-desc" class="terminal-input mini"></div>
@@ -903,6 +945,35 @@
             document.getElementById('inv-modal').classList.add('hidden');
         });
 
+        // --- Currency Modal Logic --- //
+        document.getElementById('currency-tab-btn').addEventListener('click', () => {
+            document.getElementById('currency-modal-current').textContent = characterData.currency || 0;
+            document.getElementById('currency-modal-amount').value = '';
+            document.getElementById('currency-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('btn-currency-cancel').addEventListener('click', () => {
+            document.getElementById('currency-modal').classList.add('hidden');
+        });
+
+        const updateCurrency = (mode) => {
+            const amt = parseInt(document.getElementById('currency-modal-amount').value) || 0;
+            let cur = parseInt(characterData.currency) || 0;
+            
+            if (mode === 'add') cur += amt;
+            else if (mode === 'sub') cur -= amt;
+            else if (mode === 'set') cur = amt;
+            
+            characterData.currency = cur;
+            populateSheet();
+            autoSaveDossier();
+            document.getElementById('currency-modal').classList.add('hidden');
+        };
+
+        document.getElementById('btn-currency-add').addEventListener('click', () => updateCurrency('add'));
+        document.getElementById('btn-currency-sub').addEventListener('click', () => updateCurrency('sub'));
+        document.getElementById('btn-currency-set').addEventListener('click', () => updateCurrency('set'));
+
         document.getElementById('btn-confirm-inv').addEventListener('click', () => {
             const name = document.getElementById('inv-modal-name').value.trim();
             const size = parseFloat(document.getElementById('inv-modal-size').value);
@@ -940,13 +1011,16 @@
             characterData.total_ap = (level * 2) + gift_ap;
             characterData.total_pp = Math.max(0, level - 20);
 
-            const str = parseInt(characterData.str) || 10;
-            const dex = parseInt(characterData.dex) || 10;
-            const hth = parseInt(characterData.hth) || 10;
-            const int = parseInt(characterData.int) || 10;
-            const con = parseInt(characterData.con) || 10;
-            const will = parseInt(characterData.will) || 10;
-            const per = parseInt(characterData.per) || 10;
+            const defaultStats = { int: 10, con: 10, will: 10, per: 10, str: 10, dex: 10, hth: 10 };
+            const baseStats = (window.OEShared.subclassStats && window.OEShared.subclassStats[characterData.subclass]) ? window.OEShared.subclassStats[characterData.subclass] : defaultStats;
+
+            const str = parseInt(characterData.str) || baseStats.str;
+            const dex = parseInt(characterData.dex) || baseStats.dex;
+            const hth = parseInt(characterData.hth) || baseStats.hth;
+            const int = parseInt(characterData.int) || baseStats.int;
+            const con = parseInt(characterData.con) || baseStats.con;
+            const will = parseInt(characterData.will) || baseStats.will;
+            const per = parseInt(characterData.per) || baseStats.per;
             
             const base_hp = hth + Math.max(0, str - 8);
             characterData.hp = base_hp + (parseInt(characterData.bought_hp) || 0);
@@ -974,7 +1048,7 @@
 
             let spent_xp_attrs = 0;
             if (window.OEShared && window.OEShared.calculateXP) {
-                spent_xp_attrs = window.OEShared.calculateXP({ int, con, will, per, str, dex, hth });
+                spent_xp_attrs = window.OEShared.calculateXP({ int, con, will, per, str, dex, hth }, baseStats);
             }
             
             spent_xp_attrs += (parseInt(characterData.bought_hp) || 0) * 5;
@@ -1062,14 +1136,17 @@
                 document.getElementById('char-pp').textContent = `${characterData.total_pp} PP`;
             } else { ppContainer.style.display = 'none'; }
 
-            document.getElementById('attr-int').textContent = characterData.int || "10";
-            document.getElementById('attr-con').textContent = characterData.con || "10";
-            document.getElementById('attr-will').textContent = characterData.will || "10";
-            document.getElementById('attr-per').textContent = characterData.per || "10";
+            const defaultStats = { int: 10, con: 10, will: 10, per: 10, str: 10, dex: 10, hth: 10 };
+            const baseStats = (window.OEShared.subclassStats && window.OEShared.subclassStats[characterData.subclass]) ? window.OEShared.subclassStats[characterData.subclass] : defaultStats;
 
-            document.getElementById('attr-str').textContent = characterData.str || "10";
-            document.getElementById('attr-dex').textContent = characterData.dex || "10";
-            document.getElementById('attr-hth').textContent = characterData.hth || "10";
+            document.getElementById('attr-int').textContent = characterData.int || baseStats.int;
+            document.getElementById('attr-con').textContent = characterData.con || baseStats.con;
+            document.getElementById('attr-will').textContent = characterData.will || baseStats.will;
+            document.getElementById('attr-per').textContent = characterData.per || baseStats.per;
+
+            document.getElementById('attr-str').textContent = characterData.str || baseStats.str;
+            document.getElementById('attr-dex').textContent = characterData.dex || baseStats.dex;
+            document.getElementById('attr-hth').textContent = characterData.hth || baseStats.hth;
 
             document.getElementById('dep-hp-current').textContent = characterData.current_hp !== undefined ? characterData.current_hp : (characterData.hp || "20");
             document.getElementById('dep-hp').textContent = characterData.hp || "20";
@@ -1083,6 +1160,8 @@
             document.getElementById('cond-speed-half').textContent = characterData.speed_half || 0;
             document.getElementById('cond-speed-sprint').textContent = characterData.speed_sprint || 0;
             document.getElementById('cond-connection').textContent = characterData.connection || 10;
+
+            document.getElementById('currency-display').textContent = characterData.currency || 0;
 
             const fatigue = characterData.fatigue || "Winded";
             document.getElementById('sel-fatigue').value = fatigue;
@@ -1121,7 +1200,7 @@
 
             const attributes = ['int', 'con', 'will', 'per', 'str', 'dex', 'hth'];
             attributes.forEach(attr => {
-                const bought = (parseInt(characterData[attr]) || 10) - 10;
+                const bought = (parseInt(characterData[attr]) || baseStats[attr]) - baseStats[attr];
                 const el = document.getElementById(`track-${attr}`);
                 if (el) {
                     if (bought > 0) el.textContent = `[+${bought}]`;
@@ -1221,7 +1300,8 @@
             let hasRefGear = false;
 
             if (characterData.equipped && characterData.equipped.length > 0) {
-                refGearList.innerHTML = characterData.equipped.map((item) => {
+        refGearList.innerHTML = '';
+        characterData.equipped.forEach((item) => {
                     if (item.type === 'Weapon' || item.type === 'Armor') {
                         hasRefGear = true;
                         let statsHtml = [];
@@ -1238,9 +1318,9 @@
                         if (item.dur) statsHtml.push(`<span class="c-amber">[DUR: ${item.dur}]</span>`);
                         if (item.hp) statsHtml.push(`<span class="c-amber">[HP: ${item.hp}]</span>`);
                         
-                        let effectHtml = item.effects ? `<div class="c-text-dim font-size-1 mt-0-25">>> EFFECTS: ${item.effects}</div>` : '';
-                        if (item.tags && item.tags.length > 0) effectHtml += `<div class="c-text-dim font-size-1 mt-0-25">>> TAGS: ${item.tags.join(', ')}</div>`;
-                        if (item.material) effectHtml += `<div class="c-text-dim font-size-1 mt-0-25">>> MAT: ${item.material}</div>`;
+                        let effectHtml = item.effects ? `<div class="c-amber font-size-1 mt-0-25">>> EFFECTS: ${item.effects}</div>` : '';
+                        if (item.tags && item.tags.length > 0) effectHtml += `<div class="c-amber font-size-1 mt-0-25">>> TAGS: ${item.tags.join(', ')}</div>`;
+                        if (item.material) effectHtml += `<div class="c-amber font-size-1 mt-0-25">>> MAT: ${item.material}</div>`;
                         
                         refGearList.innerHTML += `<div class="mb-1"><div class="c-green font-size-1">> <strong>${item.name}</strong> <span class="c-text-dim">(${item.type})</span></div><div class="mt-0-25 font-size-1">${statsHtml.join(' ')}</div>${effectHtml}</div>`;
                     }
@@ -1255,7 +1335,7 @@
             invList.innerHTML = '';
             
             if (characterData.inventory && characterData.inventory.length > 0) {
-                characterData.inventory.forEach((item, index) => {
+        invList.innerHTML = characterData.inventory.map((item, index) => {
                     if (item.isEquip) {
                         const slots = Math.ceil(item.size || 1);
                         usedSlots += slots;
@@ -1384,7 +1464,7 @@
                     'attr-int', 'attr-con', 'attr-will', 'attr-per', 'attr-str', 'attr-dex', 'attr-hth',
                     'dep-hp', 'dep-stun', 'dep-res', 'dep-rct',
                     'cond-priority', 'cond-speed-base', 'cond-speed-half', 'cond-speed-sprint',
-                'inv-used', 'inv-max', 'cond-connection', 'cond-amps'
+                'inv-used', 'inv-max', 'cond-connection', 'cond-amps', 'currency-display'
                 ];
                 elementsToBlank.forEach(id => {
                     const el = document.getElementById(id);

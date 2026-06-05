@@ -166,14 +166,15 @@ html[data-theme="notebook"] [contenteditable="true"]:focus {
 }
 
 html[data-theme="notebook"] .readout-line,
-html[data-theme="notebook"] .char-meta-grid {
+html[data-theme="notebook"] .char-meta-grid,
+html[data-theme="notebook"] .terminal-btn {
     font-size: 0.95rem;
 }
 
 html[data-theme="notebook"] select,
 html[data-theme="notebook"] .terminal-input,
 html[data-theme="notebook"] [contenteditable="true"],
-html[data-theme="notebook"] #quick-ref-gear .font-size-1 {
+html[data-theme="notebook"] .font-size-1 {
     font-size: 0.85rem;
 }
 
@@ -184,6 +185,17 @@ html[data-theme="notebook"] [contenteditable="true"] {
 
 html[data-theme="notebook"] .terminal-input.right {
     text-align: right;
+}
+
+html[data-theme="notebook"] .c-amber,
+html[data-theme="notebook"] .c-blue,
+html[data-theme="notebook"] .c-red,
+html[data-theme="notebook"] .line-value.amber,
+html[data-theme="notebook"] .build-resources,
+html[data-theme="notebook"] .build-warning,
+html[data-theme="notebook"] .bullet-list li::before,
+html[data-theme="notebook"] .stat-control span {
+    text-shadow: none !important;
 }
 
 /* Scanline Overlay Effect */
