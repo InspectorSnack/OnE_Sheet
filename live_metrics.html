@@ -28,6 +28,18 @@
     </div>
 </div>
 
+<div id="kia-confirm-modal" class="overlay-screen hidden flex-start overflow-y-auto pt-3">
+    <h1>> CONFIRM KIA STATUS <span class="cursor-blink">_</span></h1>
+    <div class="header-rule w-100 max-w-400 mb-2"></div>
+    <div class="w-100 max-w-400 text-center">
+        <p class="mb-2 c-amber">WARNING: Marking operative as KIA will lock their stats from editing. Equipment can still be managed. Proceed?</p>
+        <div class="flex-center gap-1">
+            <button id="btn-kia-cancel" class="terminal-btn flex-1">CANCEL</button>
+            <button id="btn-kia-confirm" class="terminal-btn flex-1 btn-amber">MARK KIA</button>
+        </div>
+    </div>
+</div>
+
 <div id="equip-modal" class="overlay-screen hidden flex-start overflow-y-auto pt-3">
     <h1>> ADD EQUIPMENT <span class="cursor-blink">_</span></h1>
     <div class="header-rule w-100 max-w-600 mb-2"></div>
@@ -133,7 +145,7 @@
 
 <div id="main-sheet" class="container">
     <header>
-        <h1>> Live Metrics <span class="cursor-blink">_</span></h1>
+        <h1>> Live Metrics <span class="cursor-blink">_</span> <span id="kia-indicator" class="c-red hidden ml-0-5" style="font-weight:bold;">[ KIA ]</span></h1>
         <div class="header-sub">
             // Outlands and Echos<br>
             // NAME: <span id="char-name" data-key="name" contenteditable="true" class="c-text-primary"></span> &nbsp;&nbsp;|&nbsp;&nbsp; PLAYER: <span id="char-player" data-key="player" contenteditable="true" class="c-text-primary"></span>
@@ -273,6 +285,8 @@
         <button id="btn-toggle-tut" class="terminal-btn w-100 max-w-250">[ TUTORIAL ]</button>
         <button id="btn-toggle-ref" class="terminal-btn w-100 max-w-250">[ REFERENCE TABLES ]</button>
         <button id="btn-main-menu" class="terminal-btn w-100 max-w-250">[ SYSTEM MENU ]</button>
+        <button id="btn-status-kia" class="terminal-btn w-100 max-w-250 btn-amber">[ MARK KIA ]</button>
+        <button id="btn-status-revive" class="terminal-btn w-100 max-w-250 hidden">[ REVIVE ]</button>
     </div>
 
     <div id="reference-panel" class="panel hidden mt-1-5"></div>
@@ -399,6 +413,7 @@
             if (e.target.hasAttribute('contenteditable')) {
                 const key = e.target.getAttribute('data-key');
                 if (key) {
+                if (characterData.kia && key !== 'name' && key !== 'player') return;
                     characterData[key] = e.target.textContent.trim();
                     if (key === 'current_hp') validateCompromised(); 
                     autoSaveDossier();
@@ -407,6 +422,7 @@
         });
 
         document.getElementById('dep-hp-current').addEventListener('focus', function() {
+        if (characterData.kia) return;
             const range = document.createRange();
             range.selectNodeContents(this);
             const sel = window.getSelection();
@@ -415,6 +431,7 @@
         });
 
         document.getElementById('dep-stun-current').addEventListener('focus', function() {
+        if (characterData.kia) return;
             const range = document.createRange();
             range.selectNodeContents(this);
             const sel = window.getSelection();
@@ -423,6 +440,7 @@
         });
 
         document.getElementById('dep-stun').addEventListener('click', () => {
+        if (characterData.kia) return;
             if (characterData.stun !== undefined) {
                 characterData.current_stun = characterData.stun;
                 document.getElementById('dep-stun-current').textContent = characterData.current_stun;
@@ -431,6 +449,7 @@
         });
 
         document.getElementById('cond-amps-current').addEventListener('focus', function() {
+        if (characterData.kia) return;
             const range = document.createRange();
             range.selectNodeContents(this);
             const sel = window.getSelection();
@@ -439,6 +458,7 @@
         });
 
         document.getElementById('cond-amps').addEventListener('click', () => {
+        if (characterData.kia) return;
             if (characterData.amps !== undefined) {
                 characterData.current_amps = characterData.amps;
                 document.getElementById('cond-amps-current').textContent = characterData.current_amps;
@@ -447,6 +467,7 @@
         });
 
         document.getElementById('dep-hp').addEventListener('click', () => {
+        if (characterData.kia) return;
             if (characterData.hp !== undefined) {
                 characterData.current_hp = characterData.hp;
                 document.getElementById('dep-hp-current').textContent = characterData.current_hp;
@@ -457,6 +478,7 @@
 
         document.getElementById('main-sheet').addEventListener('click', (e) => {
             if (e.target.classList.contains('arrow')) {
+            if (characterData.kia) return;
                 const action = e.target.getAttribute('data-action');
                 const key = e.target.getAttribute('data-key');
                 
@@ -590,6 +612,24 @@
                 }
             });
         });
+
+    document.getElementById('btn-status-kia')?.addEventListener('click', () => {
+        document.getElementById('kia-confirm-modal').classList.remove('hidden');
+    });
+    document.getElementById('btn-kia-cancel')?.addEventListener('click', () => {
+        document.getElementById('kia-confirm-modal').classList.add('hidden');
+    });
+    document.getElementById('btn-kia-confirm')?.addEventListener('click', () => {
+        characterData.kia = true;
+        autoSaveDossier();
+        window.location.href = 'index.html';
+    });
+    document.getElementById('btn-status-revive')?.addEventListener('click', () => {
+        characterData.kia = false;
+        autoSaveDossier();
+        sessionStorage.setItem('auto_boot', 'true');
+        window.location.href = 'index.html';
+    });
 
         document.getElementById('list-equipped').addEventListener('click', (e) => {
             if (e.target.classList.contains('del-equip')) {
@@ -1121,6 +1161,32 @@
             } else {
                 document.getElementById('cond-amps-row').style.display = 'none';
             }
+
+        if (characterData.kia) {
+            document.getElementById('kia-indicator').classList.remove('hidden');
+            document.getElementById('btn-status-kia').classList.add('hidden');
+            document.getElementById('btn-status-revive').classList.remove('hidden');
+            document.getElementById('char-class').disabled = true;
+            document.getElementById('char-subclass').disabled = true;
+            document.getElementById('sel-fatigue').disabled = true;
+            document.getElementById('sel-composure').disabled = true;
+            
+            document.getElementById('dep-hp-current').removeAttribute('contenteditable');
+            document.getElementById('dep-stun-current').removeAttribute('contenteditable');
+            if(document.getElementById('cond-amps-current')) document.getElementById('cond-amps-current').removeAttribute('contenteditable');
+        } else {
+            document.getElementById('kia-indicator').classList.add('hidden');
+            document.getElementById('btn-status-kia').classList.remove('hidden');
+            document.getElementById('btn-status-revive').classList.add('hidden');
+            document.getElementById('char-class').disabled = false;
+            document.getElementById('char-subclass').disabled = false;
+            document.getElementById('sel-fatigue').disabled = false;
+            document.getElementById('sel-composure').disabled = false;
+            
+            document.getElementById('dep-hp-current').setAttribute('contenteditable', 'true');
+            document.getElementById('dep-stun-current').setAttribute('contenteditable', 'true');
+            if(document.getElementById('cond-amps-current')) document.getElementById('cond-amps-current').setAttribute('contenteditable', 'true');
+        }
 
             document.getElementById('char-level').textContent = characterData.level || "1";
             document.getElementById('char-gift-xp').textContent = characterData.gift_xp || "0";

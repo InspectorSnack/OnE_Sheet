@@ -28,6 +28,23 @@
     <div id="dossier-log-container" class="hidden mt-3 w-100 max-w-400">
         <p class="header-sub mb-1">> DOSSIER LOG // RECENT</p>
         <div id="dossier-log-list" class="flex-col gap-0-5"></div>
+        <div class="flex-center align-center gap-0-5 mt-1" style="opacity: 0.6;">
+            <input type="checkbox" id="chk-hide-kia" checked class="pointer">
+            <label for="chk-hide-kia" class="c-text-dim font-size-0-8 pointer">Hide KIA dossiers</label>
+        </div>
+    </div>
+</div>
+
+<div id="delete-confirm-modal" class="overlay-screen hidden">
+    <h1>> CONFIRM DELETION <span class="cursor-blink">_</span></h1>
+    <div class="header-rule w-100 max-w-400 mb-2"></div>
+    <div class="w-100 max-w-400 text-center">
+        <p id="delete-confirm-text" class="mb-2 c-red">WARNING: How do you want to handle this dossier?</p>
+        <div class="flex-center gap-0-5 flex-wrap">
+            <button id="btn-delete-cancel" class="terminal-btn flex-1 min-w-100">CANCEL</button>
+            <button id="btn-delete-kia" class="terminal-btn flex-1 btn-amber min-w-100">MARK KIA</button>
+            <button id="btn-delete-confirm" class="terminal-btn flex-1 btn-red min-w-100">DELETE</button>
+        </div>
     </div>
 </div>
 

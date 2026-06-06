@@ -4,6 +4,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const builderScreen = document.getElementById('builder-screen');
     const bootScreen = document.getElementById('boot-screen');
     const bootContainer = document.getElementById('boot-container');
+    const confirmModal = document.getElementById('delete-confirm-modal');
+    const confirmText = document.getElementById('delete-confirm-text');
+    const btnDeleteCancel = document.getElementById('btn-delete-cancel');
+    const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
+    const btnDeleteKia = document.getElementById('btn-delete-kia');
+    const chkHideKia = document.getElementById('chk-hide-kia');
+
+    let dossierToDeleteIndex = -1;
     
     const inClass = document.getElementById('in-class');
     const inSubclass = document.getElementById('in-subclass');
@@ -33,6 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
     inSubclass.addEventListener('change', (e) => {
         if (window.setBuilderStats) setBuilderStats(e.target.value);
     });
+    
+    if (chkHideKia) chkHideKia.addEventListener('change', () => loadDossierLog());
 
     let characterData = {};
 
@@ -42,24 +52,65 @@ document.addEventListener("DOMContentLoaded", () => {
             const log = JSON.parse(localStorage.getItem('dossier_log') || '[]');
             const logContainer = document.getElementById('dossier-log-container');
             const logList = document.getElementById('dossier-log-list');
+            const hideKia = chkHideKia ? chkHideKia.checked : false;
+
             logList.innerHTML = '';
             if (log.length > 0) {
                 logContainer.classList.remove('hidden');
-                log.forEach(dossier => {
+                log.forEach((dossier, index) => {
+                    if (hideKia && dossier.kia) return;
+
+                    const row = document.createElement('div');
+                    row.style.display = 'flex';
+                    row.style.gap = '0.5rem';
+                    row.className = 'w-100';
+
                     const btn = document.createElement('button');
-                    btn.className = 'terminal-btn mini w-100';
-                    btn.textContent = `LOAD: ${dossier.name || 'UNKNOWN'}`;
+                    btn.className = 'terminal-btn mini flex-2';
+                    btn.textContent = `LOAD: ${dossier.name || 'UNKNOWN'}${dossier.kia ? ' [KIA]' : ''}`;
                     btn.onclick = () => {
                         characterData = dossier;
                         startupScreen.classList.add('hidden');
                         startBootSequence();
                     };
-                    logList.appendChild(btn);
+
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'terminal-btn mini btn-red';
+                    delBtn.style.flex = '0.5';
+                    delBtn.style.fontSize = '0.8rem';
+                    delBtn.style.opacity = '0.6';
+                    delBtn.style.border = '1px dashed var(--c-red)';
+                    delBtn.textContent = 'DEL / KIA';
+                    delBtn.onclick = () => {
+                        confirmText.textContent = `WARNING: How do you want to handle the dossier for ${dossier.name || 'UNKNOWN'}?`;
+                        dossierToDeleteIndex = index;
+                        btnDeleteKia.style.display = dossier.kia ? 'none' : 'block';
+                        confirmModal.classList.remove('hidden');
+                    };
+
+                    row.appendChild(btn);
+                    row.appendChild(delBtn);
+                    logList.appendChild(row);
                 });
+            } else {
+                logContainer.classList.add('hidden');
             }
         } catch (e) {}
     };
     loadDossierLog();
+
+    if (sessionStorage.getItem('auto_boot') === 'true') {
+        sessionStorage.removeItem('auto_boot');
+        try {
+            const raw = localStorage.getItem('active_character');
+            if (raw) {
+                characterData = JSON.parse(raw);
+                startupScreen.classList.add('hidden');
+                // Add small delay to let UI flush before heavy animation
+                setTimeout(() => startBootSequence(), 100); 
+            }
+        } catch (e) {}
+    }
 
     // --- UI Flow Logic --- //
     document.getElementById('btn-create').addEventListener('click', () => {
@@ -90,6 +141,39 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
         reader.readAsText(file);
+    });
+
+    btnDeleteCancel.addEventListener('click', () => {
+        confirmModal.classList.add('hidden');
+        dossierToDeleteIndex = -1;
+    });
+
+    btnDeleteKia.addEventListener('click', () => {
+        if (dossierToDeleteIndex > -1) {
+            try {
+                const log = JSON.parse(localStorage.getItem('dossier_log') || '[]');
+                if(log[dossierToDeleteIndex]) {
+                    log[dossierToDeleteIndex].kia = true;
+                    localStorage.setItem('dossier_log', JSON.stringify(log));
+                    loadDossierLog();
+                }
+            } catch (e) {}
+            confirmModal.classList.add('hidden');
+            dossierToDeleteIndex = -1;
+        }
+    });
+
+    btnDeleteConfirm.addEventListener('click', () => {
+        if (dossierToDeleteIndex > -1) {
+            try {
+                const log = JSON.parse(localStorage.getItem('dossier_log') || '[]');
+                log.splice(dossierToDeleteIndex, 1);
+                localStorage.setItem('dossier_log', JSON.stringify(log));
+                loadDossierLog();
+            } catch (e) {}
+            confirmModal.classList.add('hidden');
+            dossierToDeleteIndex = -1;
+        }
     });
 
 
