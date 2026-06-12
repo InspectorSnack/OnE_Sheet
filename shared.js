@@ -34,7 +34,7 @@ window.OEShared = {
         "Sharpshooter": { int: 11, con: 10, will: 7, per: 11, str: 10, dex: 11, hth: 10 },
         "Tactician": { int: 12, con: 10, will: 9, per: 11, str: 9, dex: 11, hth: 8 },
         "Sentinel": { int: 8, con: 10, will: 9, per: 8, str: 12, dex: 11, hth: 12 },
-        "Raider": { int: 8, con: 10, will: 8, per: 9, str: 11, dex: 13, hth: 1 },
+        "Raider": { int: 8, con: 10, will: 8, per: 9, str: 11, dex: 13, hth: 11 },
         "Scavenger": { int: 11, con: 11, will: 9, per: 12, str: 9, dex: 9, hth: 9 },
         "Tinker": { int: 13, con: 11, will: 7, per: 11, str: 11, dex: 9, hth: 8 },
         "BioTechnician": { int: 12, con: 11, will: 11, per: 11, str: 7, dex: 9, hth: 9 },
@@ -58,6 +58,44 @@ window.OEShared = {
                 document.documentElement.setAttribute('data-theme', newTheme);
                 localStorage.setItem('oe_theme', newTheme);
             });
+        }
+
+        // Handle CRT flicker toggle button injection and click handling
+        const container = document.getElementById('theme-selector-container');
+        if (container) {
+            container.style.display = 'flex';
+            container.style.gap = '0.5rem';
+            container.style.alignItems = 'center';
+
+            let flickerBtn = document.getElementById('btn-toggle-flicker');
+            if (!flickerBtn) {
+                flickerBtn = document.createElement('button');
+                flickerBtn.id = 'btn-toggle-flicker';
+                flickerBtn.className = 'terminal-btn mini';
+                flickerBtn.style.margin = '0';
+                container.insertBefore(flickerBtn, container.firstChild);
+            }
+
+            // Default flicker to false (OFF) unless explicitly set to true in localStorage
+            let flickerOn = localStorage.getItem('crt_flicker') === 'true';
+
+            const updateFlickerUI = () => {
+                if (flickerOn) {
+                    document.body.classList.add('flicker-active');
+                    flickerBtn.textContent = 'Flicker: ON';
+                } else {
+                    document.body.classList.remove('flicker-active');
+                    flickerBtn.textContent = 'Flicker: OFF';
+                }
+            };
+
+            updateFlickerUI();
+
+            flickerBtn.onclick = () => {
+                flickerOn = !flickerOn;
+                localStorage.setItem('crt_flicker', flickerOn ? 'true' : 'false');
+                updateFlickerUI();
+            };
         }
     },
     updateSubclassOptions: (classVal, targetSelect, selectedSub = null) => {

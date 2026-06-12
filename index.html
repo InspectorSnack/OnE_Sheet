@@ -1,168 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TERMINAL // O&E Character Sheet</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
-<div id="theme-selector-container" style="position: absolute; top: 1rem; right: 1rem; z-index: 10000;">
-    <select id="sel-theme" class="terminal-input mini bg-transparent c-text-primary">
-        <option value="default" class="bg-bg">Cyan CRT</option>
-        <option value="amber" class="bg-bg">Amber CRT</option>
-        <option value="matrix" class="bg-bg">Green CRT</option>
-        <option value="notebook" class="bg-bg">WW2 Notebook</option>
-    </select>
-</div>
-
-<div id="startup-screen" class="overlay-screen">
-    <h1>> SYSTEM TERMINAL <span class="cursor-blink">_</span></h1>
-    <p class="header-sub mb-2">Select Dossier Entry</p>
-    <div>
-        <button id="btn-create" class="terminal-btn">New Personnel File</button>
-        <button id="btn-load" class="terminal-btn">Load Existing</button>
-        <input type="file" id="file-upload" accept=".json" class="hidden">
+    <div id="theme-selector-container" style="position: absolute; top: 1rem; right: 1rem; z-index: 10000;">
+        <select id="sel-theme" class="terminal-input mini bg-transparent c-text-primary">
+            <option value="default" class="bg-bg">Cyan CRT</option>
+            <option value="amber" class="bg-bg">Amber CRT</option>
+            <option value="matrix" class="bg-bg">Green CRT</option>
+            <option value="black-crt" class="bg-bg">Black CRT</option>
+            <option value="white-crt" class="bg-bg">Paperwhite</option>
+            <option value="notebook" class="bg-bg">WW2 Notebook</option>
+            <option value="plain-paper" class="bg-bg">Plain Paper</option>
+        </select>
     </div>
-    <div id="dossier-log-container" class="hidden mt-3 w-100 max-w-400">
-        <p class="header-sub mb-1">> DOSSIER LOG // RECENT</p>
-        <div id="dossier-log-list" class="flex-col gap-0-5"></div>
-        <div class="flex-center align-center gap-0-5 mt-1" style="opacity: 0.6;">
-            <input type="checkbox" id="chk-hide-kia" checked class="pointer">
-            <label for="chk-hide-kia" class="c-text-dim font-size-0-8 pointer">Hide KIA dossiers</label>
+
+    <div id="startup-screen" class="overlay-screen">
+        <h1>> SYSTEM TERMINAL <span class="cursor-blink">_</span></h1>
+        <p class="header-sub mb-2">Select Dossier Entry</p>
+        <div>
+            <button id="btn-create" class="terminal-btn">New Personnel File</button>
+            <button id="btn-load" class="terminal-btn">Load Existing</button>
+            <input type="file" id="file-upload" accept=".json" class="hidden">
         </div>
-    </div>
-</div>
-
-<div id="delete-confirm-modal" class="overlay-screen hidden">
-    <h1>> CONFIRM DELETION <span class="cursor-blink">_</span></h1>
-    <div class="header-rule w-100 max-w-400 mb-2"></div>
-    <div class="w-100 max-w-400 text-center">
-        <p id="delete-confirm-text" class="mb-2 c-red">WARNING: How do you want to handle this dossier?</p>
-        <div class="flex-center gap-0-5 flex-wrap">
-            <button id="btn-delete-cancel" class="terminal-btn flex-1 min-w-100">CANCEL</button>
-            <button id="btn-delete-kia" class="terminal-btn flex-1 btn-amber min-w-100">MARK KIA</button>
-            <button id="btn-delete-confirm" class="terminal-btn flex-1 btn-red min-w-100">DELETE</button>
+        <div id="dossier-log-container" class="hidden mt-3 w-100 max-w-400">
+            <p class="header-sub mb-1">> DOSSIER LOG // RECENT</p>
+            <div id="dossier-log-list" class="flex-col gap-0-5"></div>
+            <div class="flex-center align-center gap-0-5 mt-1" style="opacity: 0.6;">
+                <input type="checkbox" id="chk-hide-kia" checked class="pointer">
+                <label for="chk-hide-kia" class="c-text-dim font-size-0-8 pointer">Hide KIA dossiers</label>
+            </div>
         </div>
     </div>
-</div>
 
-<div id="builder-screen" class="overlay-screen hidden flex-start overflow-y-auto pt-3">
-    <h1>> OPERATIVE INITIALIZATION</h1>
-    <div class="header-rule w-100 max-w-600 mb-2"></div>
-    <form id="builder-form" class="w-100 max-w-600">
-        <div class="grid-2-col">
-            <div class="form-group">
-                <label>Operative Name</label>
-                <input type="text" id="in-name" class="terminal-input" placeholder="e.g. John" required>
-            </div>
-            <div class="form-group">
-                <label>Player ID</label>
-                <input type="text" id="in-player" class="terminal-input" placeholder="e.g. ST-09" required>
-            </div>
-            <div class="form-group">
-                <label>Class</label>
-                <select id="in-class" class="terminal-input" required></select>
-            </div>
-            <div class="form-group">
-                <label>Subclass</label>
-                <select id="in-subclass" class="terminal-input" required></select>
-            </div>
-            <div class="form-group">
-                <label>Starting Level</label>
-            <input type="number" id="in-level" class="terminal-input" value="1" min="1" required onkeydown="return false;">
-            </div>
-            <div class="form-group">
-                <label>Starting Resources</label>
-                <div class="build-resources">
-                    XP: <span id="build-xp-tot">10</span> &nbsp;&nbsp;|&nbsp;&nbsp; AP: <span id="build-ap-tot">2</span>
-                </div>
-                <div id="build-warning" class="build-warning"></div>
-            </div>
-            <div class="form-group">
-                <label>INT (Intelligence)</label>
-                <div class="terminal-input stat-control flex-center w-100">
-                    <span id="build-int" class="mr-0-5">10</span>
-                    <span class="spinner-arrows">
-                        <span class="arrow up" data-target="build-int" data-action="up">▲</span>
-                        <span class="arrow down" data-target="build-int" data-action="down">▼</span>
-                    </span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>CON (Constitution)</label>
-                <div class="terminal-input stat-control flex-center w-100">
-                    <span id="build-con" class="mr-0-5">10</span>
-                    <span class="spinner-arrows">
-                        <span class="arrow up" data-target="build-con" data-action="up">▲</span>
-                        <span class="arrow down" data-target="build-con" data-action="down">▼</span>
-                    </span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>WILL (Willpower)</label>
-                <div class="terminal-input stat-control flex-center w-100">
-                    <span id="build-will" class="mr-0-5">10</span>
-                    <span class="spinner-arrows">
-                        <span class="arrow up" data-target="build-will" data-action="up">▲</span>
-                        <span class="arrow down" data-target="build-will" data-action="down">▼</span>
-                    </span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>PER (Perception)</label>
-                <div class="terminal-input stat-control flex-center w-100">
-                    <span id="build-per" class="mr-0-5">10</span>
-                    <span class="spinner-arrows">
-                        <span class="arrow up" data-target="build-per" data-action="up">▲</span>
-                        <span class="arrow down" data-target="build-per" data-action="down">▼</span>
-                    </span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>STR (Strength)</label>
-                <div class="terminal-input stat-control flex-center w-100">
-                    <span id="build-str" class="mr-0-5">10</span>
-                    <span class="spinner-arrows">
-                        <span class="arrow up" data-target="build-str" data-action="up">▲</span>
-                        <span class="arrow down" data-target="build-str" data-action="down">▼</span>
-                    </span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>DEX (Dexterity)</label>
-                <div class="terminal-input stat-control flex-center w-100">
-                    <span id="build-dex" class="mr-0-5">10</span>
-                    <span class="spinner-arrows">
-                        <span class="arrow up" data-target="build-dex" data-action="up">▲</span>
-                        <span class="arrow down" data-target="build-dex" data-action="down">▼</span>
-                    </span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>HTH (Health)</label>
-                <div class="terminal-input stat-control flex-center w-100">
-                    <span id="build-hth" class="mr-0-5">10</span>
-                    <span class="spinner-arrows">
-                        <span class="arrow up" data-target="build-hth" data-action="up">▲</span>
-                        <span class="arrow down" data-target="build-hth" data-action="down">▼</span>
-                    </span>
-                </div>
+    <div id="delete-confirm-modal" class="overlay-screen hidden">
+        <h1>> CONFIRM DELETION <span class="cursor-blink">_</span></h1>
+        <div class="header-rule w-100 max-w-400 mb-2"></div>
+        <div class="w-100 max-w-400 text-center">
+            <p id="delete-confirm-text" class="mb-2 c-red">WARNING: How do you want to handle this dossier?</p>
+            <div class="flex-center gap-0-5 flex-wrap">
+                <button id="btn-delete-cancel" class="terminal-btn flex-1 min-w-100">CANCEL</button>
+                <button id="btn-delete-kia" class="terminal-btn flex-1 btn-amber min-w-100">MARK KIA</button>
+                <button id="btn-delete-confirm" class="terminal-btn flex-1 btn-red min-w-100">DELETE</button>
             </div>
         </div>
-        <div class="flex-center gap-1 mt-1 mb-2">
-            <button type="button" id="btn-builder-back" class="terminal-btn flex-1 btn-red">[ BACK ]</button>
-            <button type="submit" class="terminal-btn flex-2">COMPILE & INITIALIZE</button>
-        </div>
-    </form>
-</div>
+    </div>
 
-<div id="boot-screen" class="hidden">
-    <div id="boot-container"></div>
-</div>
+    <div id="builder-screen" class="overlay-screen hidden flex-start overflow-y-auto pt-3">
+        <h1>> OPERATIVE INITIALIZATION</h1>
+        <div class="header-rule w-100 max-w-600 mb-2"></div>
+        <form id="builder-form" class="w-100 max-w-600">
+            <div class="grid-2-col">
+                <div class="form-group">
+                    <label>Operative Name</label>
+                    <input type="text" id="in-name" class="terminal-input" placeholder="e.g. John" required>
+                </div>
+                <div class="form-group">
+                    <label>Player ID</label>
+                    <input type="text" id="in-player" class="terminal-input" placeholder="e.g. Doe" required>
+                </div>
+                <div class="form-group">
+                    <label>Class</label>
+                    <select id="in-class" class="terminal-input" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Subclass</label>
+                    <select id="in-subclass" class="terminal-input" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Starting Level</label>
+                    <input type="number" id="in-level" class="terminal-input" value="1" min="1" required
+                        onkeydown="return false;">
+                </div>
+                <div class="form-group">
+                    <label>Starting Resources</label>
+                    <div class="build-resources">
+                        XP: <span id="build-xp-tot">10</span> &nbsp;&nbsp;|&nbsp;&nbsp; AP: <span
+                            id="build-ap-tot">2</span>
+                    </div>
+                    <div id="build-warning" class="build-warning"></div>
+                </div>
+                <div class="form-group">
+                    <label>INT (Intelligence)</label>
+                    <div class="terminal-input stat-control flex-center w-100">
+                        <span id="build-int" class="mr-0-5">10</span>
+                        <span class="spinner-arrows">
+                            <span class="arrow up" data-target="build-int" data-action="up">▲</span>
+                            <span class="arrow down" data-target="build-int" data-action="down">▼</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>CON (Constitution)</label>
+                    <div class="terminal-input stat-control flex-center w-100">
+                        <span id="build-con" class="mr-0-5">10</span>
+                        <span class="spinner-arrows">
+                            <span class="arrow up" data-target="build-con" data-action="up">▲</span>
+                            <span class="arrow down" data-target="build-con" data-action="down">▼</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>WILL (Willpower)</label>
+                    <div class="terminal-input stat-control flex-center w-100">
+                        <span id="build-will" class="mr-0-5">10</span>
+                        <span class="spinner-arrows">
+                            <span class="arrow up" data-target="build-will" data-action="up">▲</span>
+                            <span class="arrow down" data-target="build-will" data-action="down">▼</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>PER (Perception)</label>
+                    <div class="terminal-input stat-control flex-center w-100">
+                        <span id="build-per" class="mr-0-5">10</span>
+                        <span class="spinner-arrows">
+                            <span class="arrow up" data-target="build-per" data-action="up">▲</span>
+                            <span class="arrow down" data-target="build-per" data-action="down">▼</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>STR (Strength)</label>
+                    <div class="terminal-input stat-control flex-center w-100">
+                        <span id="build-str" class="mr-0-5">10</span>
+                        <span class="spinner-arrows">
+                            <span class="arrow up" data-target="build-str" data-action="up">▲</span>
+                            <span class="arrow down" data-target="build-str" data-action="down">▼</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>DEX (Dexterity)</label>
+                    <div class="terminal-input stat-control flex-center w-100">
+                        <span id="build-dex" class="mr-0-5">10</span>
+                        <span class="spinner-arrows">
+                            <span class="arrow up" data-target="build-dex" data-action="up">▲</span>
+                            <span class="arrow down" data-target="build-dex" data-action="down">▼</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>HTH (Health)</label>
+                    <div class="terminal-input stat-control flex-center w-100">
+                        <span id="build-hth" class="mr-0-5">10</span>
+                        <span class="spinner-arrows">
+                            <span class="arrow up" data-target="build-hth" data-action="up">▲</span>
+                            <span class="arrow down" data-target="build-hth" data-action="down">▼</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-center gap-1 mt-1 mb-2">
+                <button type="button" id="btn-builder-back" class="terminal-btn flex-1 btn-red">[ BACK ]</button>
+                <button type="submit" class="terminal-btn flex-2">COMPILE & INITIALIZE</button>
+            </div>
+        </form>
+    </div>
 
-<script src="shared.js"></script>
-<script src="index.js"></script>
+    <div id="boot-screen" class="hidden">
+        <div id="boot-container"></div>
+    </div>
+
+    <script src="shared.js"></script>
+    <script src="index.js"></script>
 </body>
+
 </html>
